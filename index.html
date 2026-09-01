@@ -5705,36 +5705,94 @@ function getActiveStaffRecord() {
   const curr = STATE.currentUser;
   if (!curr) return STATE.staff[0] || { id: 'st_demo', name: 'Employee', role: 'Staff Specialist', baseSalary: 30000 };
 
-  let staff = (STATE.staff || []).find(s => 
-    s.id === curr.staffId || 
-    (curr.email && s.phone === curr.email) ||
-    (curr.email && s.email && s.email.toLowerCase() === curr.email.toLowerCase()) ||
-    (curr.name && s.name && s.name.toLowerCase() === curr.name.toLowerCase())
-  );
+  const cleanEmail = (curr.email || '').toLowerCase().trim();
+  const cleanName = (curr.name || '').toLowerCase().trim();
+  const cleanStaffId = (curr.staffId || '').toLowerCase().trim();
+  const cleanUserId = (curr.id || '').toLowerCase().trim();
+
+  let staff = (STATE.staff || []).find(s => {
+    const sId = (s.id || '').toLowerCase().trim();
+    const sEmail = (s.email || '').toLowerCase().trim();
+    const sPhone = (s.phone || '').toLowerCase().trim();
+    const sName = (s.name || '').toLowerCase().trim();
+
+    return (cleanStaffId && (sId === cleanStaffId || sId.includes(cleanStaffId) || cleanStaffId.includes(sId))) ||
+           (cleanEmail && (sEmail === cleanEmail || sPhone === cleanEmail)) ||
+           (cleanName && sName === cleanName) ||
+           (cleanUserId && (sId === cleanUserId || cleanUserId.includes(sId)));
+  });
 
   if (!staff) {
     staff = {
-      id: curr.staffId || `st_${Date.now()}`,
+      id: curr.staffId || (curr.id && curr.id.startsWith('st_') ? curr.id : `st_${Date.now()}`),
       name: curr.name || 'Team Member',
       role: curr.title || 'Staff Specialist',
       phone: curr.email || '',
+      email: curr.email || '',
       baseSalary: 30000,
       status: 'Active'
     };
     if (!STATE.staff) STATE.staff = [];
     STATE.staff.push(staff);
-    curr.staffId = staff.id;
-    saveLocalState();
   }
+
+  // Keep bi-directional identity consistent
+  if (curr) {
+    curr.staffId = staff.id;
+    if (!staff.email && curr.email) staff.email = curr.email;
+  }
+
   return staff;
 }
+window.getActiveStaffRecord = getActiveStaffRecord;
+
+function isTaskAssignedToStaff(task, staff, currentUser) {
+  if (!task || !task.assignedTo) return false;
+  const target = String(task.assignedTo).toLowerCase().trim();
+  const s = staff || {};
+  const u = currentUser || {};
+
+  const staffId = (s.id || '').toLowerCase().trim();
+  const staffName = (s.name || '').toLowerCase().trim();
+  const staffEmail = (s.email || '').toLowerCase().trim();
+  const staffPhone = (s.phone || '').toLowerCase().trim();
+  const userId = (u.id || '').toLowerCase().trim();
+  const userStaffId = (u.staffId || '').toLowerCase().trim();
+  const userEmail = (u.email || '').toLowerCase().trim();
+  const userName = (u.name || '').toLowerCase().trim();
+
+  if (staffId && (target === staffId || target.includes(staffId) || staffId.includes(target))) return true;
+  if (userStaffId && (target === userStaffId || target.includes(userStaffId) || userStaffId.includes(target))) return true;
+  if (userId && (target === userId || target.includes(userId))) return true;
+  if (staffName && (target === staffName || target.includes(staffName) || staffName.includes(target))) return true;
+  if (userName && (target === userName || target.includes(userName) || userName.includes(target))) return true;
+  if (staffEmail && (target === staffEmail || target.includes(staffEmail))) return true;
+  if (userEmail && (target === userEmail || target.includes(userEmail))) return true;
+  if (staffPhone && target === staffPhone) return true;
+
+  // Prefix matching for usr_emp_st_... vs st_...
+  const rawTarget = target.replace(/^(usr_emp_|st_|usr_)/g, '');
+  const rawStaffId = staffId.replace(/^(usr_emp_|st_|usr_)/g, '');
+  const rawUserStaffId = userStaffId.replace(/^(usr_emp_|st_|usr_)/g, '');
+  if (rawTarget && (rawTarget === rawStaffId || rawTarget === rawUserStaffId)) return true;
+
+  return false;
+}
+window.isTaskAssignedToStaff = isTaskAssignedToStaff;
+
+function isContentAssignedToStaff(item, staff, currentUser) {
+  if (!item) return false;
+  return isTaskAssignedToStaff({ assignedTo: item.assignedStaffId }, staff, currentUser) ||
+         isTaskAssignedToStaff({ assignedTo: item.shootById }, staff, currentUser);
+}
+window.isContentAssignedToStaff = isContentAssignedToStaff;
 
 function empPunchToday(status = 'Present') {
   const staff = getActiveStaffRecord();
   const today = todayStr();
   const nowTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-  let att = STATE.attendance.find(a => a.staffId === staff.id && a.date === today);
+  let att = STATE.attendance.find(a => isTaskAssignedToStaff({ assignedTo: a.staffId }, staff, STATE.currentUser) && a.date === today);
   if (att) {
     att.status = status;
     att.checkIn = nowTime;
@@ -5756,10 +5814,10 @@ window.empPunchToday = empPunchToday;
 function renderEmpWorkspaceView() {
   const staff = getActiveStaffRecord();
   const today = todayStr();
-  const todayAtt = STATE.attendance.find(a => a.staffId === staff.id && a.date === today);
-  const myShoots = STATE.contentItems.filter(c => c.shootById === staff.id || c.assignedStaffId === staff.id);
-  const myTasks = STATE.tasks.filter(t => t.assignedTo === staff.id && t.status !== 'Done');
-  const myMonthAtt = STATE.attendance.filter(a => a.staffId === staff.id && a.date.slice(0,7) === currentYM());
+  const todayAtt = STATE.attendance.find(a => isTaskAssignedToStaff({ assignedTo: a.staffId }, staff, STATE.currentUser) && a.date === today);
+  const myShoots = STATE.contentItems.filter(c => isContentAssignedToStaff(c, staff, STATE.currentUser));
+  const myTasks = STATE.tasks.filter(t => isTaskAssignedToStaff(t, staff, STATE.currentUser) && t.status !== 'Done');
+  const myMonthAtt = STATE.attendance.filter(a => isTaskAssignedToStaff({ assignedTo: a.staffId }, staff, STATE.currentUser) && a.date.slice(0,7) === currentYM());
   const presentCount = myMonthAtt.filter(a => a.status === 'Present').length;
   const halfCount = myMonthAtt.filter(a => a.status === 'Half Day').length;
 
@@ -5873,9 +5931,9 @@ function renderEmpAttendanceView() {
   const ym = currentYM();
   const daysInMonth = new Date(Number(ym.split('-')[0]), Number(ym.split('-')[1]), 0).getDate();
   const today = todayStr();
-  const todayAtt = STATE.attendance.find(a => a.staffId === staff.id && a.date === today);
+  const todayAtt = STATE.attendance.find(a => isTaskAssignedToStaff({ assignedTo: a.staffId }, staff, STATE.currentUser) && a.date === today);
 
-  const monthRecords = STATE.attendance.filter(a => a.staffId === staff.id && a.date.slice(0, 7) === ym);
+  const monthRecords = STATE.attendance.filter(a => isTaskAssignedToStaff({ assignedTo: a.staffId }, staff, STATE.currentUser) && a.date.slice(0, 7) === ym);
   const presentCount = monthRecords.filter(a => a.status === 'Present').length;
   const halfCount = monthRecords.filter(a => a.status === 'Half Day').length;
   const absentCount = monthRecords.filter(a => a.status === 'Absent').length;
@@ -5913,7 +5971,7 @@ function renderEmpAttendanceView() {
           const dNum = String(i + 1).padStart(2, '0');
           const dStr = `${ym}-${dNum}`;
           const isToday = dStr === today;
-          const rec = STATE.attendance.find(a => a.staffId === staff.id && a.date === dStr);
+          const rec = STATE.attendance.find(a => isTaskAssignedToStaff({ assignedTo: a.staffId }, staff, STATE.currentUser) && a.date === dStr);
           const st = rec ? rec.status : 'None';
           const pillColor = st === 'Present' ? 'background:rgba(16,185,129,0.18); color:var(--signal-cash); border:1px solid rgba(16,185,129,0.4);' : st === 'Half Day' ? 'background:rgba(245,158,11,0.18); color:var(--accent-amber); border:1px solid rgba(245,158,11,0.4);' : st === 'Absent' ? 'background:rgba(244,63,94,0.18); color:var(--accent-rose); border:1px solid rgba(244,63,94,0.4);' : 'background:var(--bg-subtle); color:var(--text-muted); border:1px solid var(--border-subtle);';
 
@@ -5933,7 +5991,7 @@ function attachEmpAttendance() {}
 /* ---------- EMPLOYEE: CONTENT & VIDEO DELIVERABLES ---------- */
 function renderEmpContentView() {
   const staff = getActiveStaffRecord();
-  const myShoots = STATE.contentItems.filter(c => c.shootById === staff.id || c.assignedStaffId === staff.id);
+  const myShoots = STATE.contentItems.filter(c => isContentAssignedToStaff(c, staff, STATE.currentUser));
 
   return `
     <div class="view-header" style="margin-bottom:24px;">
@@ -5951,7 +6009,8 @@ function renderEmpContentView() {
           <tbody>
             ${myShoots.map(c => {
               const client = STATE.clients.find(cl => cl.id === c.clientId) || { name: 'Client' };
-              const roleTitle = c.shootById === staff.id ? 'Shooter' : 'Video Editor';
+              const isShooter = isTaskAssignedToStaff({ assignedTo: c.shootById }, staff, STATE.currentUser);
+              const roleTitle = isShooter ? 'Shooter' : 'Video Editor';
               return `
                 <tr>
                   <td><b>${esc(client.name)}</b></td>
@@ -6028,7 +6087,7 @@ window.openEmpContentModal = openEmpContentModal;
 /* ---------- EMPLOYEE: TASKS & DEADLINES ---------- */
 function renderEmpTasksView() {
   const staff = getActiveStaffRecord();
-  const myTasks = STATE.tasks.filter(t => t.assignedTo === staff.id);
+  const myTasks = STATE.tasks.filter(t => isTaskAssignedToStaff(t, staff, STATE.currentUser));
   const today = todayStr();
 
   return `
@@ -6055,13 +6114,13 @@ function renderEmpTasksView() {
                   </td>
                   <td><b style="${t.status === 'Done' ? 'text-decoration:line-through;' : ''}">${esc(t.title)}</b></td>
                   <td>${esc(client.name)}</td>
-                  <td><span class="pill ${t.priority === 'High' ? 'pill-rose' : 'pill-blue'}">${esc(t.priority)}</span></td>
+                  <td><span class="pill ${t.priority === 'High' || t.priority === 'Urgent' ? 'pill-rose' : 'pill-blue'}">${esc(t.priority)}</span></td>
                   <td>
                     <span class="pill ${isOverdue ? 'pill-rose' : 'pill-amber'}">
-                      ${isOverdue ? `⚠️ Overdue (${fmtDate(t.deadline)})` : fmtDate(t.deadline)}
+                      ${isOverdue ? '⚠️ Overdue' : `Due ${fmtDate(t.deadline)}`}
                     </span>
                   </td>
-                  <td><span class="pill ${t.status === 'Done' ? 'pill-green' : 'pill-blue'}">${esc(t.status)}</span></td>
+                  <td><span class="pill ${t.status === 'Done' ? 'pill-green' : 'pill-amber'}">${esc(t.status)}</span></td>
                 </tr>
               `;
             }).join('')}
@@ -6087,7 +6146,7 @@ window.toggleEmpTaskDone = toggleEmpTaskDone;
 /* ---------- EMPLOYEE: SALARY & PAYSLIPS ---------- */
 function renderEmpPayslipsView() {
   const staff = getActiveStaffRecord();
-  const mySalaries = STATE.salaryPayments.filter(s => s.staffId === staff.id);
+  const mySalaries = STATE.salaryPayments.filter(s => isTaskAssignedToStaff({ assignedTo: s.staffId }, staff, STATE.currentUser));
 
   return `
     <div class="view-header" style="margin-bottom:24px;">
@@ -10315,6 +10374,43 @@ window.toggleDropdownMenu = toggleDropdownMenu;
     }
   }, { passive: true });
 });
+
+// Cross-Tab & Multi-Browser Real-Time State Sync
+window.addEventListener('storage', (e) => {
+  if (e.key === 'metrovise_os_data_v1' || e.key === 'accountix_os_data_v1') {
+    try {
+      const parsed = JSON.parse(e.newValue);
+      if (parsed) {
+        if (Array.isArray(parsed.tasks)) STATE.tasks = parsed.tasks;
+        if (Array.isArray(parsed.contentItems)) STATE.contentItems = parsed.contentItems;
+        if (Array.isArray(parsed.attendance)) STATE.attendance = parsed.attendance;
+        if (Array.isArray(parsed.salaryPayments)) STATE.salaryPayments = parsed.salaryPayments;
+        if (Array.isArray(parsed.staff)) STATE.staff = parsed.staff;
+        if (Array.isArray(parsed.clients)) STATE.clients = parsed.clients;
+        if (Array.isArray(parsed.packages)) STATE.packages = parsed.packages;
+        render();
+      }
+    } catch(err) {}
+  }
+});
+
+// Live Cloud Sync on Tab Focus
+window.addEventListener('focus', async () => {
+  if (STATE.isAuthenticated && !_isSyncingCloud) {
+    if (isSupabaseConnected()) {
+      await syncFromSupabase();
+    }
+  }
+});
+
+// Background Cloud Sync Heartbeat (Every 10 seconds for real-time task & deliverable updates)
+setInterval(async () => {
+  if (STATE.isAuthenticated && !document.hidden && !_isSyncingCloud) {
+    if (isSupabaseConnected()) {
+      await syncFromSupabase();
+    }
+  }
+}, 10000);
 
 (async function() {
   await loadState();

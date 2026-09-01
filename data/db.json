@@ -249,9 +249,39 @@
       "status": "Active",
       "purchasedDate": "2026-09-01",
       "plan": "Enterprise Suite"
+    },
+    {
+      "id": "usr_emp_st_kavya_1788256312970",
+      "name": "Kavya Patel",
+      "email": "kavya.patel@agency.com",
+      "password": "Staff@9876",
+      "mustChangePassword": true,
+      "role": "employee",
+      "staffId": "st_kavya_1788256312970",
+      "companyId": "comp_1",
+      "companyName": "Metrovise Media HQ",
+      "title": "Lead Video Editor & Reel Specialist",
+      "avatar": "👥",
+      "lastActiveAt": "2026-09-01T09:51:53.010Z",
+      "status": "Active",
+      "purchasedDate": "2026-09-01",
+      "plan": "Enterprise Suite",
+      "isSuperAdmin": false
     }
   ],
   "loginLogs": [
+    {
+      "id": "log_1788256313011_9m1k",
+      "userId": "usr_emp_st_kavya_1788256312970",
+      "userName": "Kavya Patel",
+      "userEmail": "kavya.patel@agency.com",
+      "role": "employee",
+      "companyName": "Metrovise Media HQ",
+      "loginTime": "01 Sept 2026, 03:21:53 pm",
+      "authMethod": "JWT Verified (Email + Password)",
+      "status": "Success (Verified)",
+      "device": "Desktop Workstation"
+    },
     {
       "id": "log_1788254856697_rm2t",
       "userId": "usr_super_jeet",
@@ -589,360 +619,38 @@
       "device": "Mobile Device"
     }
   ],
-  "clients": [
-    {
-      "id": "cl_1",
-      "name": "Apex Dental Care",
-      "company": "Dr. Nikhil Parekh Clinic",
-      "mobile": "9898011223",
-      "whatsapp": "9898011223",
-      "instagram": "@apexdentalcare",
-      "status": "Active",
-      "createdAt": "2026-09-01T10:00:00Z"
-    },
-    {
-      "id": "cl_2",
-      "name": "UrbanFit Gym & Crossfit",
-      "company": "UrbanFit Sports Pvt Ltd",
-      "mobile": "9898022334",
-      "whatsapp": "9898022334",
-      "instagram": "@urbanfitgym",
-      "status": "Active",
-      "createdAt": "2026-09-02T11:00:00Z"
-    },
-    {
-      "id": "cl_3",
-      "name": "Royal Rajputana Jewellers",
-      "company": "Royal Jewellers & Sons",
-      "mobile": "9898033445",
-      "whatsapp": "9898033445",
-      "instagram": "@royalrajputana",
-      "status": "Active",
-      "createdAt": "2026-09-03T12:00:00Z"
-    },
-    {
-      "id": "cl_4",
-      "name": "The Craft Coffee Roastery",
-      "company": "Craft Bean Hospitality",
-      "mobile": "9898044556",
-      "whatsapp": "9898044556",
-      "instagram": "@thecraftcoffee",
-      "status": "Active",
-      "createdAt": "2026-09-04T14:00:00Z"
-    }
-  ],
-  "packages": [
-    {
-      "id": "pkg_1",
-      "clientId": "cl_1",
-      "serviceType": "Social Media Management (Reels + Posts)",
-      "amount": 45000,
-      "startDate": "2026-09-01",
-      "endDate": "2026-09-28",
-      "assignedStaffId": "st_5",
-      "status": "Active"
-    },
-    {
-      "id": "pkg_2",
-      "clientId": "cl_2",
-      "serviceType": "Meta & Instagram Ads Management",
-      "amount": 35000,
-      "startDate": "2026-09-05",
-      "endDate": "2026-09-30",
-      "assignedStaffId": "st_3",
-      "status": "Active"
-    },
-    {
-      "id": "pkg_3",
-      "clientId": "cl_3",
-      "serviceType": "Complete Brand Marketing (SMMA)",
-      "amount": 80000,
-      "startDate": "2026-09-01",
-      "endDate": "2026-09-30",
-      "assignedStaffId": "st_1",
-      "status": "Active"
-    },
-    {
-      "id": "pkg_4",
-      "clientId": "cl_4",
-      "serviceType": "Website Design & Development",
-      "amount": 55000,
-      "startDate": "2026-09-10",
-      "endDate": "2026-09-25",
-      "assignedStaffId": "st_4",
-      "status": "Active"
-    }
-  ],
-  "payments": [
-    {
-      "id": "pay_1",
-      "clientId": "cl_1",
-      "packageId": "pkg_1",
-      "amount": 45000,
-      "date": "2026-09-02",
-      "mode": "UPI (GPay / PhonePe / Paytm)",
-      "note": "Advance full payment"
-    },
-    {
-      "id": "pay_2",
-      "clientId": "cl_2",
-      "packageId": "pkg_2",
-      "amount": 20000,
-      "date": "2026-09-06",
-      "mode": "Bank Transfer (NEFT/IMPS/RTGS)",
-      "note": "Part payment"
-    },
-    {
-      "id": "pay_3",
-      "clientId": "cl_3",
-      "packageId": "pkg_3",
-      "amount": 50000,
-      "date": "2026-09-04",
-      "mode": "UPI (GPay / PhonePe / Paytm)",
-      "note": "First installment"
-    },
-    {
-      "id": "pay_4",
-      "clientId": "cl_4",
-      "packageId": "pkg_4",
-      "amount": 30000,
-      "date": "2026-09-11",
-      "mode": "Bank Transfer (NEFT/IMPS/RTGS)",
-      "note": "50% project milestone"
-    }
-  ],
-  "expenses": [
-    {
-      "id": "exp_1",
-      "category": "Office Rent",
-      "amount": 22000,
-      "date": "2026-09-02",
-      "mode": "Bank Transfer (NEFT/IMPS/RTGS)",
-      "note": "Studio 304 Rent"
-    },
-    {
-      "id": "exp_2",
-      "category": "Electricity & Utilities",
-      "amount": 4800,
-      "date": "2026-09-07",
-      "mode": "UPI (GPay / PhonePe / Paytm)",
-      "note": "Office Power & AC"
-    },
-    {
-      "id": "exp_3",
-      "category": "Software & SaaS Tools",
-      "amount": 8500,
-      "date": "2026-09-05",
-      "mode": "Credit Card / Debit Card",
-      "note": "Adobe CC, Canva, Notion, Midjourney"
-    },
-    {
-      "id": "exp_4",
-      "category": "Shooting Equipment & Gear",
-      "amount": 3200,
-      "date": "2026-09-12",
-      "mode": "UPI (GPay / PhonePe / Paytm)",
-      "note": "Wireless Lapel Mic Batteries & Diffuser"
-    },
-    {
-      "id": "exp_5",
-      "category": "Salary",
-      "amount": 32000,
-      "date": "2026-09-05",
-      "mode": "Bank Transfer (NEFT/IMPS/RTGS)",
-      "note": "Salary — Rohan Mehta",
-      "staffId": "st_2"
-    }
-  ],
-  "staff": [
-    {
-      "id": "st_1",
-      "name": "Aarav Sharma",
-      "role": "Video Shooter / Cinematographer",
-      "phone": "9820011223",
-      "baseSalary": 28000,
-      "status": "Active"
-    },
-    {
-      "id": "st_2",
-      "name": "Rohan Mehta",
-      "role": "Video Editor",
-      "phone": "9820022334",
-      "baseSalary": 32000,
-      "status": "Active"
-    },
-    {
-      "id": "st_3",
-      "name": "Pooja Patel",
-      "role": "Meta Ads Specialist",
-      "phone": "9820033445",
-      "baseSalary": 35000,
-      "status": "Active"
-    },
-    {
-      "id": "st_4",
-      "name": "Vikram Joshi",
-      "role": "Full-Stack Web Developer",
-      "phone": "9820044556",
-      "baseSalary": 40000,
-      "status": "Active"
-    },
-    {
-      "id": "st_5",
-      "name": "Sneha Shah",
-      "role": "Social Media Manager",
-      "phone": "9820055667",
-      "baseSalary": 25000,
-      "status": "Active"
-    },
-    {
-      "id": "st_1788251525975",
-      "name": "Alex Rivers",
-      "role": "Lead Video Editor",
-      "phone": "alex.editor@agency.com",
-      "baseSalary": 30000,
-      "status": "Active"
-    },
-    {
-      "id": "st_1788251606970",
-      "name": "Rohan Sharma",
-      "role": "Video Editor & Colorist",
-      "phone": "rohan.video@agency.com",
-      "baseSalary": 30000,
-      "status": "Active",
-      "defaultPassword": "RohanPermanent@2026"
-    },
-    {
-      "id": "st_1788254856657",
-      "name": "Jeet Staff Test",
-      "role": "Video Editor",
-      "phone": "jeetrakholiya02@gmail.com",
-      "baseSalary": 30000,
-      "status": "Active"
-    }
-  ],
+  "clients": [],
+  "packages": [],
+  "payments": [],
+  "expenses": [],
+  "staff": [],
   "attendance": [],
   "salaryPayments": [],
   "tasks": [
     {
-      "id": "tsk_1",
-      "title": "Schedule shoot with Dr. Nikhil for Saturday 11 AM",
+      "id": "tsk_kavya_1",
+      "title": "Edit 3 High-Energy Dental Reels",
       "clientId": "cl_1",
-      "assignedTo": "st_1",
-      "deadline": "2026-09-01",
+      "assignedTo": "st_kavya_1788256312970",
+      "deadline": "2026-09-05",
       "priority": "High",
-      "status": "In Progress"
-    },
-    {
-      "id": "tsk_2",
-      "title": "Review ROAS for UrbanFit lead gen campaign",
-      "clientId": "cl_2",
-      "assignedTo": "st_3",
-      "deadline": "2026-09-01",
-      "priority": "High",
-      "status": "To Do"
-    },
-    {
-      "id": "tsk_3",
-      "title": "Finalize payment gateway integration for Craft Coffee",
-      "clientId": "cl_4",
-      "assignedTo": "st_4",
-      "deadline": "2026-09-01",
-      "priority": "Medium",
-      "status": "In Progress"
+      "status": "Done"
     }
   ],
   "contentItems": [
     {
-      "id": "cnt_1",
+      "id": "cnt_kavya_1",
       "clientId": "cl_1",
-      "date": "2026-09-01",
-      "type": "Reel Shoot",
-      "topic": "5 Dental Myths Busted by Dr. Nikhil",
-      "shootById": "st_1",
-      "assignedStaffId": "st_2",
-      "status": "Editing",
-      "driveLink": "https://drive.google.com/drive/folders/sample-apex",
-      "caption": "Are you brushing too hard? 🦷"
-    },
-    {
-      "id": "cnt_2",
-      "clientId": "cl_2",
-      "date": "2026-09-01",
-      "type": "Meta Ads Creative",
-      "topic": "Transformation 30-Day Bootcamp Promo",
-      "shootById": "st_1",
-      "assignedStaffId": "st_3",
-      "status": "Client Approval",
-      "driveLink": "https://drive.google.com/file/sample-urbanfit",
-      "caption": "Join before month end! 💪"
-    },
-    {
-      "id": "cnt_3",
-      "clientId": "cl_3",
-      "date": "2026-09-01",
-      "type": "Reel Shoot",
-      "topic": "Handcrafted Bridal Polki Showcase",
-      "shootById": "st_1",
-      "assignedStaffId": "st_2",
-      "status": "Shoot Done",
-      "driveLink": "https://drive.google.com/drive/folders/royal-jewels"
-    },
-    {
-      "id": "cnt_4",
-      "clientId": "cl_4",
-      "date": "2026-09-01",
-      "type": "Website Landing Page",
-      "topic": "Coffee Subscription & Cart Checkout",
-      "shootById": "",
-      "assignedStaffId": "st_4",
-      "status": "Editing"
+      "topic": "Dental Implant Transformation Reel",
+      "type": "Reel / Short",
+      "assignedStaffId": "st_kavya_1788256312970",
+      "date": "2026-09-03",
+      "status": "Ready for Review",
+      "driveLink": "https://drive.google.com/file/d/1A2B3C4D_kavya_sample/view"
     }
   ],
-  "leads": [
-    {
-      "id": "ld_1",
-      "name": "Kabir Varma",
-      "business": "Soul Sanctuary Spa & Wellness",
-      "phone": "9877011223",
-      "service": "Social Media Management (Reels + Posts)",
-      "budget": 40000,
-      "followUpDate": "2026-09-01",
-      "status": "Proposal Sent",
-      "createdAt": "2026-09-08"
-    },
-    {
-      "id": "ld_2",
-      "name": "Meera Deshmukh",
-      "business": "Artisan Home Decor",
-      "phone": "9877022334",
-      "service": "Meta & Instagram Ads Management",
-      "budget": 30000,
-      "followUpDate": "2026-09-01",
-      "status": "Contacted",
-      "createdAt": "2026-09-10"
-    },
-    {
-      "id": "ld_3",
-      "name": "Harsh Patel",
-      "business": "Patel Realty Infra",
-      "phone": "9877033445",
-      "service": "Complete Brand Marketing (SMMA)",
-      "budget": 120000,
-      "followUpDate": "2026-09-01",
-      "status": "Negotiation",
-      "createdAt": "2026-09-05"
-    }
-  ],
-  "settings": {
-    "agencyName": "Metrovise",
-    "tagline": "Agency Business OS & Financial Engine",
-    "phone": "+91 98765 43210",
-    "email": "hello@metrovise.com",
-    "currencySymbol": "₹",
-    "theme": "light",
-    "profession": "general"
-  },
+  "leads": [],
+  "settings": {},
   "isAuthenticated": true,
   "currentUser": {
     "id": "usr_manager",
@@ -957,36 +665,7 @@
     "purchasedDate": "2026-01-15",
     "plan": "1 Year Plan"
   },
-  "serviceCatalog": [
-    {
-      "id": "srv_gen_1",
-      "name": "Standard Service Retainer",
-      "defaultAmount": 30000,
-      "cycle": "Monthly Retainer",
-      "description": "Recurring standard client service package"
-    },
-    {
-      "id": "srv_gen_2",
-      "name": "Premium Enterprise Package",
-      "defaultAmount": 60000,
-      "cycle": "Monthly Retainer",
-      "description": "Comprehensive enterprise tier with priority handling"
-    },
-    {
-      "id": "srv_gen_3",
-      "name": "Project-Based Contract",
-      "defaultAmount": 45000,
-      "cycle": "Project-Based",
-      "description": "Milestone-based one-time project execution"
-    },
-    {
-      "id": "srv_gen_4",
-      "name": "Advisory & Consulting Session",
-      "defaultAmount": 15000,
-      "cycle": "One-Time",
-      "description": "Expert consultation and strategic assessment"
-    }
-  ],
+  "serviceCatalog": [],
   "view": "sales",
   "_search": "",
   "_salesTab": "table",
@@ -1025,365 +704,39 @@
   ],
   "workspaces": {
     "comp_1": {
-      "clients": [
-        {
-          "id": "cl_1",
-          "name": "Apex Dental Care",
-          "company": "Dr. Nikhil Parekh Clinic",
-          "mobile": "9898011223",
-          "whatsapp": "9898011223",
-          "instagram": "@apexdentalcare",
-          "status": "Active",
-          "createdAt": "2026-09-01T10:00:00Z"
-        },
-        {
-          "id": "cl_2",
-          "name": "UrbanFit Gym & Crossfit",
-          "company": "UrbanFit Sports Pvt Ltd",
-          "mobile": "9898022334",
-          "whatsapp": "9898022334",
-          "instagram": "@urbanfitgym",
-          "status": "Active",
-          "createdAt": "2026-09-02T11:00:00Z"
-        },
-        {
-          "id": "cl_3",
-          "name": "Royal Rajputana Jewellers",
-          "company": "Royal Jewellers & Sons",
-          "mobile": "9898033445",
-          "whatsapp": "9898033445",
-          "instagram": "@royalrajputana",
-          "status": "Active",
-          "createdAt": "2026-09-03T12:00:00Z"
-        },
-        {
-          "id": "cl_4",
-          "name": "The Craft Coffee Roastery",
-          "company": "Craft Bean Hospitality",
-          "mobile": "9898044556",
-          "whatsapp": "9898044556",
-          "instagram": "@thecraftcoffee",
-          "status": "Active",
-          "createdAt": "2026-09-04T14:00:00Z"
-        }
-      ],
-      "packages": [
-        {
-          "id": "pkg_1",
-          "clientId": "cl_1",
-          "serviceType": "Social Media Management (Reels + Posts)",
-          "amount": 45000,
-          "startDate": "2026-09-01",
-          "endDate": "2026-09-28",
-          "assignedStaffId": "st_5",
-          "status": "Active"
-        },
-        {
-          "id": "pkg_2",
-          "clientId": "cl_2",
-          "serviceType": "Meta & Instagram Ads Management",
-          "amount": 35000,
-          "startDate": "2026-09-05",
-          "endDate": "2026-09-30",
-          "assignedStaffId": "st_3",
-          "status": "Active"
-        },
-        {
-          "id": "pkg_3",
-          "clientId": "cl_3",
-          "serviceType": "Complete Brand Marketing (SMMA)",
-          "amount": 80000,
-          "startDate": "2026-09-01",
-          "endDate": "2026-09-30",
-          "assignedStaffId": "st_1",
-          "status": "Active"
-        },
-        {
-          "id": "pkg_4",
-          "clientId": "cl_4",
-          "serviceType": "Website Design & Development",
-          "amount": 55000,
-          "startDate": "2026-09-10",
-          "endDate": "2026-09-25",
-          "assignedStaffId": "st_4",
-          "status": "Active"
-        }
-      ],
-      "payments": [
-        {
-          "id": "pay_1",
-          "clientId": "cl_1",
-          "packageId": "pkg_1",
-          "amount": 45000,
-          "date": "2026-09-02",
-          "mode": "UPI (GPay / PhonePe / Paytm)",
-          "note": "Advance full payment"
-        },
-        {
-          "id": "pay_2",
-          "clientId": "cl_2",
-          "packageId": "pkg_2",
-          "amount": 20000,
-          "date": "2026-09-06",
-          "mode": "Bank Transfer (NEFT/IMPS/RTGS)",
-          "note": "Part payment"
-        },
-        {
-          "id": "pay_3",
-          "clientId": "cl_3",
-          "packageId": "pkg_3",
-          "amount": 50000,
-          "date": "2026-09-04",
-          "mode": "UPI (GPay / PhonePe / Paytm)",
-          "note": "First installment"
-        },
-        {
-          "id": "pay_4",
-          "clientId": "cl_4",
-          "packageId": "pkg_4",
-          "amount": 30000,
-          "date": "2026-09-11",
-          "mode": "Bank Transfer (NEFT/IMPS/RTGS)",
-          "note": "50% project milestone"
-        }
-      ],
-      "expenses": [
-        {
-          "id": "exp_1",
-          "category": "Office Rent",
-          "amount": 22000,
-          "date": "2026-09-02",
-          "mode": "Bank Transfer (NEFT/IMPS/RTGS)",
-          "note": "Studio 304 Rent"
-        },
-        {
-          "id": "exp_2",
-          "category": "Electricity & Utilities",
-          "amount": 4800,
-          "date": "2026-09-07",
-          "mode": "UPI (GPay / PhonePe / Paytm)",
-          "note": "Office Power & AC"
-        },
-        {
-          "id": "exp_3",
-          "category": "Software & SaaS Tools",
-          "amount": 8500,
-          "date": "2026-09-05",
-          "mode": "Credit Card / Debit Card",
-          "note": "Adobe CC, Canva, Notion, Midjourney"
-        },
-        {
-          "id": "exp_4",
-          "category": "Shooting Equipment & Gear",
-          "amount": 3200,
-          "date": "2026-09-12",
-          "mode": "UPI (GPay / PhonePe / Paytm)",
-          "note": "Wireless Lapel Mic Batteries & Diffuser"
-        },
-        {
-          "id": "exp_5",
-          "category": "Salary",
-          "amount": 32000,
-          "date": "2026-09-05",
-          "mode": "Bank Transfer (NEFT/IMPS/RTGS)",
-          "note": "Salary — Rohan Mehta",
-          "staffId": "st_2"
-        }
-      ],
-      "staff": [
-        {
-          "id": "st_1",
-          "name": "Aarav Sharma",
-          "role": "Video Shooter / Cinematographer",
-          "phone": "9820011223",
-          "baseSalary": 28000,
-          "status": "Active"
-        },
-        {
-          "id": "st_2",
-          "name": "Rohan Mehta",
-          "role": "Video Editor",
-          "phone": "9820022334",
-          "baseSalary": 32000,
-          "status": "Active"
-        },
-        {
-          "id": "st_3",
-          "name": "Pooja Patel",
-          "role": "Meta Ads Specialist",
-          "phone": "9820033445",
-          "baseSalary": 35000,
-          "status": "Active"
-        },
-        {
-          "id": "st_4",
-          "name": "Vikram Joshi",
-          "role": "Full-Stack Web Developer",
-          "phone": "9820044556",
-          "baseSalary": 40000,
-          "status": "Active"
-        },
-        {
-          "id": "st_5",
-          "name": "Sneha Shah",
-          "role": "Social Media Manager",
-          "phone": "9820055667",
-          "baseSalary": 25000,
-          "status": "Active"
-        }
-      ],
+      "clients": [],
+      "packages": [],
+      "payments": [],
+      "expenses": [],
+      "staff": [],
       "attendance": [],
       "salaryPayments": [],
       "tasks": [
         {
-          "id": "tsk_1",
-          "title": "Schedule shoot with Dr. Nikhil for Saturday 11 AM",
+          "id": "tsk_kavya_1",
+          "title": "Edit 3 High-Energy Dental Reels",
           "clientId": "cl_1",
-          "assignedTo": "st_1",
-          "deadline": "2026-09-01",
+          "assignedTo": "st_kavya_1788256312970",
+          "deadline": "2026-09-05",
           "priority": "High",
-          "status": "In Progress"
-        },
-        {
-          "id": "tsk_2",
-          "title": "Review ROAS for UrbanFit lead gen campaign",
-          "clientId": "cl_2",
-          "assignedTo": "st_3",
-          "deadline": "2026-09-01",
-          "priority": "High",
-          "status": "To Do"
-        },
-        {
-          "id": "tsk_3",
-          "title": "Finalize payment gateway integration for Craft Coffee",
-          "clientId": "cl_4",
-          "assignedTo": "st_4",
-          "deadline": "2026-09-01",
-          "priority": "Medium",
-          "status": "In Progress"
+          "status": "Done"
         }
       ],
       "contentItems": [
         {
-          "id": "cnt_1",
+          "id": "cnt_kavya_1",
           "clientId": "cl_1",
-          "date": "2026-09-01",
-          "type": "Reel Shoot",
-          "topic": "5 Dental Myths Busted by Dr. Nikhil",
-          "shootById": "st_1",
-          "assignedStaffId": "st_2",
-          "status": "Editing",
-          "driveLink": "https://drive.google.com/drive/folders/sample-apex",
-          "caption": "Are you brushing too hard? 🦷"
-        },
-        {
-          "id": "cnt_2",
-          "clientId": "cl_2",
-          "date": "2026-09-01",
-          "type": "Meta Ads Creative",
-          "topic": "Transformation 30-Day Bootcamp Promo",
-          "shootById": "st_1",
-          "assignedStaffId": "st_3",
-          "status": "Client Approval",
-          "driveLink": "https://drive.google.com/file/sample-urbanfit",
-          "caption": "Join before month end! 💪"
-        },
-        {
-          "id": "cnt_3",
-          "clientId": "cl_3",
-          "date": "2026-09-01",
-          "type": "Reel Shoot",
-          "topic": "Handcrafted Bridal Polki Showcase",
-          "shootById": "st_1",
-          "assignedStaffId": "st_2",
-          "status": "Shoot Done",
-          "driveLink": "https://drive.google.com/drive/folders/royal-jewels"
-        },
-        {
-          "id": "cnt_4",
-          "clientId": "cl_4",
-          "date": "2026-09-01",
-          "type": "Website Landing Page",
-          "topic": "Coffee Subscription & Cart Checkout",
-          "shootById": "",
-          "assignedStaffId": "st_4",
-          "status": "Editing"
+          "topic": "Dental Implant Transformation Reel",
+          "type": "Reel / Short",
+          "assignedStaffId": "st_kavya_1788256312970",
+          "date": "2026-09-03",
+          "status": "Ready for Review",
+          "driveLink": "https://drive.google.com/file/d/1A2B3C4D_kavya_sample/view"
         }
       ],
-      "leads": [
-        {
-          "id": "ld_1",
-          "name": "Kabir Varma",
-          "business": "Soul Sanctuary Spa & Wellness",
-          "phone": "9877011223",
-          "service": "Social Media Management (Reels + Posts)",
-          "budget": 40000,
-          "followUpDate": "2026-09-01",
-          "status": "Proposal Sent",
-          "createdAt": "2026-09-08"
-        },
-        {
-          "id": "ld_2",
-          "name": "Meera Deshmukh",
-          "business": "Artisan Home Decor",
-          "phone": "9877022334",
-          "service": "Meta & Instagram Ads Management",
-          "budget": 30000,
-          "followUpDate": "2026-09-01",
-          "status": "Contacted",
-          "createdAt": "2026-09-10"
-        },
-        {
-          "id": "ld_3",
-          "name": "Harsh Patel",
-          "business": "Patel Realty Infra",
-          "phone": "9877033445",
-          "service": "Complete Brand Marketing (SMMA)",
-          "budget": 120000,
-          "followUpDate": "2026-09-01",
-          "status": "Negotiation",
-          "createdAt": "2026-09-05"
-        }
-      ],
-      "serviceCatalog": [
-        {
-          "id": "srv_gen_1",
-          "name": "Standard Service Retainer",
-          "defaultAmount": 30000,
-          "cycle": "Monthly Retainer",
-          "description": "Recurring standard client service package"
-        },
-        {
-          "id": "srv_gen_2",
-          "name": "Premium Enterprise Package",
-          "defaultAmount": 60000,
-          "cycle": "Monthly Retainer",
-          "description": "Comprehensive enterprise tier with priority handling"
-        },
-        {
-          "id": "srv_gen_3",
-          "name": "Project-Based Contract",
-          "defaultAmount": 45000,
-          "cycle": "Project-Based",
-          "description": "Milestone-based one-time project execution"
-        },
-        {
-          "id": "srv_gen_4",
-          "name": "Advisory & Consulting Session",
-          "defaultAmount": 15000,
-          "cycle": "One-Time",
-          "description": "Expert consultation and strategic assessment"
-        }
-      ],
-      "settings": {
-        "agencyName": "Metrovise",
-        "tagline": "Agency Business OS & Financial Engine",
-        "phone": "+91 98765 43210",
-        "email": "hello@metrovise.com",
-        "currencySymbol": "₹",
-        "theme": "light",
-        "profession": "general"
-      }
+      "leads": [],
+      "serviceCatalog": [],
+      "settings": {}
     },
     "jeet@accountix.agency": {
       "clients": [
@@ -2665,6 +2018,84 @@
         "theme": "light",
         "profession": "digital_agency"
       }
+    },
+    "manager@agency.com": {
+      "clients": [],
+      "packages": [],
+      "payments": [],
+      "expenses": [],
+      "staff": [
+        {
+          "id": "st_kavya_1788256312970",
+          "name": "Kavya Patel",
+          "email": "kavya.patel@agency.com",
+          "role": "Lead Video Editor & Reel Specialist",
+          "baseSalary": 35000,
+          "status": "Active"
+        }
+      ],
+      "attendance": [],
+      "salaryPayments": [],
+      "tasks": [
+        {
+          "id": "tsk_kavya_1",
+          "title": "Edit 3 High-Energy Dental Reels",
+          "clientId": "cl_1",
+          "assignedTo": "st_kavya_1788256312970",
+          "deadline": "2026-09-05",
+          "priority": "High",
+          "status": "To Do"
+        }
+      ],
+      "contentItems": [
+        {
+          "id": "cnt_kavya_1",
+          "clientId": "cl_1",
+          "topic": "Dental Implant Transformation Reel",
+          "type": "Reel / Short",
+          "assignedStaffId": "st_kavya_1788256312970",
+          "date": "2026-09-03",
+          "status": "Raw Footage Ready"
+        }
+      ],
+      "leads": [],
+      "serviceCatalog": [],
+      "settings": {}
+    },
+    "kavya.patel@agency.com": {
+      "clients": [],
+      "packages": [],
+      "payments": [],
+      "expenses": [],
+      "staff": [],
+      "attendance": [],
+      "salaryPayments": [],
+      "tasks": [
+        {
+          "id": "tsk_kavya_1",
+          "title": "Edit 3 High-Energy Dental Reels",
+          "clientId": "cl_1",
+          "assignedTo": "st_kavya_1788256312970",
+          "deadline": "2026-09-05",
+          "priority": "High",
+          "status": "Done"
+        }
+      ],
+      "contentItems": [
+        {
+          "id": "cnt_kavya_1",
+          "clientId": "cl_1",
+          "topic": "Dental Implant Transformation Reel",
+          "type": "Reel / Short",
+          "assignedStaffId": "st_kavya_1788256312970",
+          "date": "2026-09-03",
+          "status": "Ready for Review",
+          "driveLink": "https://drive.google.com/file/d/1A2B3C4D_kavya_sample/view"
+        }
+      ],
+      "leads": [],
+      "serviceCatalog": [],
+      "settings": {}
     }
   }
 }
