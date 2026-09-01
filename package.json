@@ -1,15 +1,15 @@
 {
-  "name": "accountix-fullstack",
+  "name": "metrovise-os",
   "version": "2.5.0",
-  "description": "AccountiX — Multi-Tenant Agency Business OS with Express Backend & Supabase PostgreSQL",
+  "description": "Metrovise — Multi-Tenant Agency Business OS with Express Backend & Supabase PostgreSQL (metrovise.com)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node -e \"console.log('AccountiX Backend Tests Passed')\""
+    "test": "node -e \"console.log('Metrovise Backend Tests Passed')\""
   },
   "keywords": [
-    "accountix",
+    "metrovise",
     "agency-os",
     "fullstack",
     "express",

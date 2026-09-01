@@ -1,123 +1,124 @@
 /* ==========================================================================
-   AccountiX — Official Executive Color Palette & Complete Dual Theme Engine
+   Metrovise — Official Executive Color Palette & Dual Theme Engine
    ========================================================================== */
 
-:root {
-  /* Executive Obsidian (Dark Mode - Default) */
-  --bg-app: #080a10;
-  --bg-sidebar: #0b0f19;
-  --bg-card: #121826;
-  --bg-card-hover: #182236;
-  --bg-elevated: #1a2338;
-  --bg-subtle: #0e1422;
+:root, [data-theme="dark"] {
+  /* Twilight Slate & Rose (Dark Mode - Palette Matched) */
+  --bg-app: #171726;
+  --bg-sidebar: #1d1d2f;
+  --bg-card: #22223b;
+  --bg-card-hover: #2a2a46;
+  --bg-elevated: #2d2d4c;
+  --bg-subtle: #1a1a2b;
   
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-faint: #475569;
+  --text-primary: #f2e9e4;
+  --text-secondary: #c9ada7;
+  --text-muted: #9a8c98;
+  --text-faint: #6d6477;
   
-  --border-subtle: #1e293b;
-  --border-card: #222f46;
-  --border-focus: #6366f1;
+  --border-subtle: rgba(154, 140, 152, 0.18);
+  --border-card: rgba(201, 173, 167, 0.22);
+  --border-focus: #c9ada7;
 
   /* Official Brand & Accents */
-  --brand: #6366f1;               /* Royal Indigo */
-  --brand-light: #818cf8;
-  --brand-dark: #4f46e5;
-  --brand-gradient: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
-  --brand-soft: rgba(99, 102, 241, 0.12);
-  --brand-glow: rgba(99, 102, 241, 0.35);
+  --brand: #9a8c98;
+  --brand-light: #c9ada7;
+  --brand-dark: #4a4e69;
+  --brand-gradient: linear-gradient(135deg, #4a4e69 0%, #9a8c98 100%);
+  --brand-soft: rgba(154, 140, 152, 0.18);
+  --brand-glow: rgba(154, 140, 152, 0.32);
 
   /* Financial Accents */
-  --signal-cash: #10b981;         /* Emerald Green for Realized Cash */
-  --signal-cash-glow: rgba(16, 185, 129, 0.28);
-  --signal-soft: rgba(16, 185, 129, 0.12);
-  --accent-cyan: #06b6d4;         /* Cyber Cyan for Inflows */
-  --accent-cyan-soft: rgba(6, 182, 212, 0.12);
-  --accent-amber: #f59e0b;        /* Amber Gold for Renewals & Dues */
-  --accent-amber-soft: rgba(245, 158, 11, 0.14);
-  --accent-rose: #f43f5e;         /* Crimson Rose for Danger / Outflows */
-  --accent-rose-soft: rgba(244, 63, 94, 0.12);
+  --signal-cash: #48b388;
+  --signal-cash-glow: rgba(72, 179, 136, 0.28);
+  --signal-soft: rgba(72, 179, 136, 0.14);
+  --accent-cyan: #5da8c6;
+  --accent-cyan-soft: rgba(93, 168, 198, 0.14);
+  --accent-amber: #e29b63;
+  --accent-amber-soft: rgba(226, 155, 99, 0.14);
+  --accent-rose: #e06d85;
+  --accent-rose-soft: rgba(224, 109, 133, 0.14);
 
   /* Hero & Surface Specifics */
-  --hero-bg: linear-gradient(135deg, #0b111e 0%, #151d30 50%, #1e193d 100%);
-  --hero-border: rgba(99, 102, 241, 0.25);
-  --hero-title-color: #ffffff;
-  --hero-sub-color: #94a3b8;
-  --hero-stat-text: #94a3b8;
-  --hero-stat-val: #ffffff;
-  --hero-decor-1: rgba(16, 185, 129, 0.18);
-  --hero-decor-2: rgba(99, 102, 241, 0.2);
+  --hero-bg: linear-gradient(135deg, #1a1a2b 0%, #22223b 50%, #302b48 100%);
+  --hero-border: rgba(201, 173, 167, 0.28);
+  --hero-title-color: #f2e9e4;
+  --hero-sub-color: #c9ada7;
+  --hero-stat-text: #9a8c98;
+  --hero-stat-val: #f2e9e4;
+  --hero-decor-1: rgba(201, 173, 167, 0.2);
+  --hero-decor-2: rgba(74, 78, 105, 0.35);
 
-  --sidebar-hover-bg: rgba(255, 255, 255, 0.06);
-  --sidebar-hover-text: #ffffff;
-  --overlay-bg: rgba(8, 10, 16, 0.78);
-  --toast-bg: #1a2338;
-  --toast-text: #ffffff;
+  --sidebar-hover-bg: rgba(201, 173, 167, 0.1);
+  --sidebar-hover-text: #f2e9e4;
+  --overlay-bg: rgba(19, 19, 32, 0.82);
+  --toast-bg: #2a2a46;
+  --toast-text: #f2e9e4;
 
   --radius-sm: 8px;
   --radius: 12px;
   --radius-lg: 18px;
   --radius-xl: 24px;
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.65);
+  --shadow-sm: 0 2px 8px rgba(10, 10, 18, 0.4);
+  --shadow-md: 0 8px 24px rgba(10, 10, 18, 0.55);
+  --shadow-lg: 0 16px 48px rgba(10, 10, 18, 0.75);
 }
 
-/* Complete Official Light Theme */
+/* Complete Official Light Theme with Requested Palette */
 [data-theme="light"] {
-  --bg-app: #f4f6fa;
-  --bg-sidebar: #ffffff;          /* Clean white official light sidebar */
+  --bg-app: #f2e9e4;
+  --bg-sidebar: #ffffff;          /* Clean white light sidebar */
   --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
+  --bg-card-hover: #faf6f4;
   --bg-elevated: #ffffff;
-  --bg-subtle: #f1f5f9;
+  --bg-subtle: #e8ded8;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --text-faint: #94a3b8;
+  --text-primary: #22223b;
+  --text-secondary: #4a4e69;
+  --text-muted: #9a8c98;
+  --text-faint: #c9ada7;
 
-  --border-subtle: #e2e8f0;
-  --border-card: #e2e8f0;
-  --border-focus: #4f46e5;
+  --border-subtle: #e2d7d2;
+  --border-card: #ded0ca;
+  --border-focus: #4a4e69;
 
-  --brand: #4f46e5;
-  --brand-light: #4338ca;
-  --brand-dark: #3730a3;
-  --brand-soft: #eef2ff;
-  --brand-glow: rgba(79, 70, 229, 0.15);
+  --brand: #4a4e69;
+  --brand-light: #9a8c98;
+  --brand-dark: #22223b;
+  --brand-soft: rgba(74, 78, 105, 0.12);
+  --brand-glow: rgba(74, 78, 105, 0.22);
+  --brand-gradient: linear-gradient(135deg, #22223b 0%, #4a4e69 100%);
 
-  --signal-cash: #059669;
-  --signal-cash-glow: rgba(5, 150, 105, 0.15);
-  --signal-soft: #ecfdf5;
-  --accent-cyan: #0284c7;
-  --accent-cyan-soft: #ecfeff;
-  --accent-amber: #d97706;
-  --accent-amber-soft: #fffbeb;
-  --accent-rose: #e11d48;
-  --accent-rose-soft: #fff1f2;
+  --signal-cash: #2d6a4f;
+  --signal-cash-glow: rgba(45, 106, 79, 0.18);
+  --signal-soft: rgba(45, 106, 79, 0.12);
+  --accent-cyan: #3b7a8c;
+  --accent-cyan-soft: rgba(59, 122, 140, 0.12);
+  --accent-amber: #b97a44;
+  --accent-amber-soft: rgba(185, 122, 68, 0.14);
+  --accent-rose: #a84e62;
+  --accent-rose-soft: rgba(168, 78, 98, 0.12);
 
   /* Hero & Surface Specifics */
-  --hero-bg: linear-gradient(135deg, #ffffff 0%, #f0fdf4 55%, #eef2ff 100%);
-  --hero-border: rgba(16, 185, 129, 0.35);
-  --hero-title-color: #0f172a;
-  --hero-sub-color: #475569;
-  --hero-stat-text: #64748b;
-  --hero-stat-val: #0f172a;
-  --hero-decor-1: rgba(16, 185, 129, 0.12);
-  --hero-decor-2: rgba(99, 102, 241, 0.1);
+  --hero-bg: linear-gradient(135deg, #ffffff 0%, #f7f1ee 50%, #ede2dc 100%);
+  --hero-border: rgba(201, 173, 167, 0.55);
+  --hero-title-color: #22223b;
+  --hero-sub-color: #4a4e69;
+  --hero-stat-text: #4a4e69;
+  --hero-stat-val: #22223b;
+  --hero-decor-1: rgba(201, 173, 167, 0.35);
+  --hero-decor-2: rgba(74, 78, 105, 0.16);
 
-  --sidebar-hover-bg: #f1f5f9;
-  --sidebar-hover-text: #0f172a;
-  --overlay-bg: rgba(15, 23, 42, 0.45);
-  --toast-bg: #0f172a;
-  --toast-text: #ffffff;
+  --sidebar-hover-bg: rgba(74, 78, 105, 0.07);
+  --sidebar-hover-text: #22223b;
+  --overlay-bg: rgba(34, 34, 59, 0.48);
+  --toast-bg: #22223b;
+  --toast-text: #f2e9e4;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 18px rgba(15, 23, 42, 0.07);
-  --shadow-lg: 0 12px 36px rgba(15, 23, 42, 0.12);
+  --shadow-sm: 0 1px 3px rgba(34, 34, 59, 0.06);
+  --shadow-md: 0 4px 18px rgba(34, 34, 59, 0.08);
+  --shadow-lg: 0 12px 36px rgba(34, 34, 59, 0.13);
 }
 
 *, *::before, *::after {

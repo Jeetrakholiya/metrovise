@@ -4,9 +4,9 @@
  * Gracefully synchronizes with Supabase Cloud Database & Local Cache
  */
 
-const API_BASE = window.location.origin.startsWith('http') ? window.location.origin : 'http://localhost:5000';
+const API_BASE = (typeof window !== 'undefined' && window.location.origin.startsWith('http')) ? window.location.origin : 'http://localhost:5000';
 
-const AccountiX_API = {
+var AccountiX_API = (typeof window !== 'undefined' && window.AccountiX_API) || {
   // Check backend server health
   async checkHealth() {
     try {

@@ -93,7 +93,7 @@ const DEFAULT_SETTINGS = {
   phone: '+91 98765 43210',
   email: 'hello@accountix.agency',
   currencySymbol: '₹',
-  theme: 'dark'
+  theme: 'light'
 };
 
 class Store {

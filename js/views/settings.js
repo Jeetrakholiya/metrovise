@@ -1,5 +1,5 @@
 /* ==========================================================================
-   AccountiX — Settings & Agency Configuration View
+   Metrovise — Settings & Agency Configuration View
    ========================================================================== */
 
 import { store, SERVICE_TYPES, EXPENSE_CATEGORIES, PAYMENT_MODES, CONTENT_TYPES, STAFF_ROLES } from '../store.js';
@@ -25,7 +25,7 @@ export function renderSettings() {
       <div class="field-row">
         <div class="field">
           <label>Agency Name</label>
-          <input id="f_set_name" value="${esc(s.agencyName || 'AccountiX')}" />
+          <input id="f_set_name" value="${esc(s.agencyName || 'Metrovise')}" />
         </div>
         <div class="field">
           <label>Tagline / Motto</label>
@@ -40,7 +40,7 @@ export function renderSettings() {
         </div>
         <div class="field">
           <label>Official Email</label>
-          <input id="f_set_email" value="${esc(s.email || 'hello@accountix.agency')}" />
+          <input id="f_set_email" value="${esc(s.email || 'hello@metrovise.com')}" />
         </div>
       </div>
 

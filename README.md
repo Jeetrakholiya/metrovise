@@ -1,12 +1,12 @@
-# ⚡ AccountiX — Agency Business OS & Financial Engine
+# ⚡ Metrovise — Agency Business OS & Financial Engine
 
-> **Executive ERP, Financial Operating System & Production Studio for Modern Marketing Agencies (SMMA, Creative & Performance Agencies) with Supabase Cloud Sync.**
+> **Executive ERP, Financial Operating System & Production Studio for Modern Marketing Agencies (metrovise.com) with Supabase Cloud Sync.**
 
 ---
 
 ## 🌟 Overview & Purpose
 
-**AccountiX** is an executive-grade business operating system engineered specifically for agency founders, managing directors, operations leads, and account managers.
+**Metrovise** is an executive-grade business operating system engineered specifically for agency founders, managing directors, operations leads, and account managers.
 
 ### 💎 Key Architectural Highlights:
 1. **☁️ Supabase PostgreSQL Cloud Sync**: Real-time cloud synchronization across team devices with optimistic UI and 100% offline fallback to `localStorage`.
@@ -23,11 +23,11 @@
 
 ## 🚀 Fullstack Architecture (Frontend + Express Backend + Supabase)
 
-AccountiX is built with a complete modern fullstack architecture:
+Metrovise is built with a complete modern fullstack architecture:
 
 ```
 +-----------------------------------------------------------------------------+
-|                          ACCOUNTIX FULLSTACK SYSTEM                         |
+|                          METROVISE FULLSTACK SYSTEM                         |
 +-----------------------------------------------------------------------------+
 |  🎨 FRONTEND SPA         |  ⚡ BACKEND REST API       |  🗄️ DATABASE LAYER   |
 |  • HTML5 / Vanilla JS    |  • Express.js (Node.js)    |  • Supabase (Postgres)  |
@@ -134,4 +134,4 @@ When you are ready to onboard real clients:
 
 ---
 
-*AccountiX — Built for High-Performance Modern Agencies.*
+*Metrovise — Built for High-Performance Modern Agencies (metrovise.com).*
