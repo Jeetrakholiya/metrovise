@@ -1413,94 +1413,64 @@ let STATE = {
   _adminTab: 'overview', _empTab: 'workspace', _empContentTab: 'all'
 };
 
-/* ================= 💎 BESPOKE METROVISE MV MONOGRAM LOGO ENGINE ================= */
+/* ================= 💎 SLEEK PROFESSIONAL METROVISE MV MONOGRAM LOGO ENGINE ================= */
 function renderMetroviseLogoSvg(size = 38, variant = 'brand') {
-  const gId1 = `mvM1_${variant}_${Math.random().toString(36).substr(2, 4)}`;
-  const gId2 = `mvV2_${variant}_${Math.random().toString(36).substr(2, 4)}`;
-  const gId3 = `mvM3_${variant}_${Math.random().toString(36).substr(2, 4)}`;
-  const gIdBg = `mvBg_${variant}_${Math.random().toString(36).substr(2, 4)}`;
-  const gIdGlow = `mvGl_${variant}_${Math.random().toString(36).substr(2, 4)}`;
+  const uid = Math.random().toString(36).substr(2, 4);
+  const gId = `mv_g_${variant}_${uid}`;
+  const gBg = `mv_bg_${variant}_${uid}`;
 
-  let colMain = '#c9ada7', colDeep = '#9a8c98', colLight = '#f2e9e4', colDark = '#4a4e69';
-  let badgeBorder = 'rgba(201,173,167,0.35)';
+  let c1 = '#f5ede8', c2 = '#c9ada7', c3 = '#9a8c98';
+  let border = 'rgba(201, 173, 167, 0.28)';
 
   if (variant === 'admin') {
-    colMain = '#c084fc'; colDeep = '#9333ea'; colLight = '#f5d0fe'; colDark = '#6b21a8';
-    badgeBorder = 'rgba(192,132,252,0.45)';
+    c1 = '#faf5ff', c2 = '#c084fc', c3 = '#9333ea';
+    border = 'rgba(192, 132, 252, 0.35)';
   } else if (variant === 'employee') {
-    colMain = '#34d399'; colDeep = '#059669'; colLight = '#a7f3d0'; colDark = '#065f46';
-    badgeBorder = 'rgba(52,211,153,0.45)';
+    c1 = '#ecfdf5', c2 = '#34d399', c3 = '#059669';
+    border = 'rgba(52, 211, 153, 0.35)';
   }
 
   return `
     <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="border-radius:22%; flex-shrink:0; vertical-align:middle; display:inline-block;">
       <defs>
-        <!-- Background Radial Luxury Sheen -->
-        <radialGradient id="${gIdBg}" cx="50%" cy="30%" r="70%">
-          <stop offset="0%" stop-color="#2c2c48"/>
-          <stop offset="60%" stop-color="#1d1d2f"/>
-          <stop offset="100%" stop-color="#12121e"/>
-        </radialGradient>
-
-        <!-- Left M-Pillar & Diagonal Gradient -->
-        <linearGradient id="${gId1}" x1="20" y1="20" x2="50" y2="80" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="${colLight}"/>
-          <stop offset="45%" stop-color="${colMain}"/>
-          <stop offset="100%" stop-color="${colDeep}"/>
+        <!-- Background Sheen -->
+        <linearGradient id="${gBg}" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#242436"/>
+          <stop offset="100%" stop-color="#141420"/>
         </linearGradient>
 
-        <!-- Interlocking 'V' Center Monogram Ribbon -->
-        <linearGradient id="${gId2}" x1="30" y1="20" x2="70" y2="85" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#ffffff"/>
-          <stop offset="35%" stop-color="${colLight}"/>
-          <stop offset="85%" stop-color="${colMain}"/>
-          <stop offset="100%" stop-color="${colDeep}"/>
+        <!-- Primary Monogram Gradient -->
+        <linearGradient id="${gId}" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="${c1}"/>
+          <stop offset="45%" stop-color="${c2}"/>
+          <stop offset="100%" stop-color="${c3}"/>
         </linearGradient>
-
-        <!-- Right M-Pillar Gradient -->
-        <linearGradient id="${gId3}" x1="50" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="${colMain}"/>
-          <stop offset="55%" stop-color="${colDeep}"/>
-          <stop offset="100%" stop-color="${colDark}"/>
-        </linearGradient>
-
-        <!-- Dynamic Ambient Drop Shadow -->
-        <filter id="${gIdGlow}" x="-10%" y="-10%" width="120%" height="120%" filterUnits="userSpaceOnUse">
-          <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.55"/>
-        </filter>
       </defs>
 
       <!-- Base Plaque -->
-      <rect width="100" height="100" rx="22" fill="url(#${gIdBg})"/>
-      <rect x="1" y="1" width="98" height="98" rx="21" stroke="${badgeBorder}" stroke-width="1.5"/>
-      <rect x="4" y="4" width="92" height="92" rx="18" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+      <rect width="100" height="100" rx="22" fill="url(#${gBg})"/>
+      <rect x="0.75" y="0.75" width="98.5" height="98.5" rx="21.25" stroke="${border}" stroke-width="1.5"/>
 
-      <!-- MV Interlocking Luxury Monogram -->
-      <g filter="url(#${gIdGlow})">
-        <!-- Outer Left Leg of M -->
-        <path d="M 22 26 C 22 23.8 23.8 22 26 22 L 32.5 22 C 34.7 22 36.5 23.8 36.5 26 L 36.5 74 C 36.5 76.2 34.7 78 32.5 78 L 26 78 C 23.8 78 22 76.2 22 74 Z" fill="url(#${gId1})"/>
+      <!-- Clean Architectural MV Monogram -->
+      <!-- Left Outer Stem of M -->
+      <path d="M 22 25 C 22 23.9 22.9 23 24 23 H 30 C 31.1 23 32 23.9 32 25 V 75 C 32 76.1 31.1 77 30 77 H 24 C 22.9 77 22 76.1 22 75 Z" fill="url(#${gId})"/>
 
-        <!-- Outer Right Leg of M -->
-        <path d="M 63.5 26 C 63.5 23.8 65.3 22 67.5 22 L 74 22 C 76.2 22 78 23.8 78 26 L 78 74 C 78 76.2 76.2 78 74 78 L 67.5 78 C 65.3 78 63.5 76.2 63.5 74 Z" fill="url(#${gId3})"/>
+      <!-- Right Outer Stem of M -->
+      <path d="M 68 25 C 68 23.9 68.9 23 70 23 H 76 C 77.1 23 78 23.9 78 25 V 75 C 78 76.1 77.1 77 76 77 H 70 C 68.9 77 68 76.1 68 75 Z" fill="url(#${gId})"/>
 
-        <!-- Upper M-Diagonals -->
-        <path d="M 32 23 L 50 49 L 68 23 L 58.5 23 L 50 35.5 L 41.5 23 Z" fill="url(#${gId1})" opacity="0.92"/>
+      <!-- Intersecting M Inner Chevron -->
+      <path d="M 31 23 L 50 49 L 69 23 H 60 L 50 36.5 L 40 23 Z" fill="url(#${gId})" opacity="0.95"/>
 
-        <!-- Master Interlocking 'V' Chevron (Deep-V Anchor connecting with M) -->
-        <path d="M 32.5 45 L 50 78 L 67.5 45 L 58.5 45 L 50 61 L 41.5 45 Z" fill="url(#${gId2})"/>
+      <!-- Core Interlocking 'V' Monogram Chevron -->
+      <path d="M 32 44 L 50 77 L 68 44 H 59 L 50 61 L 41 44 Z" fill="#ffffff" opacity="0.95"/>
 
-        <!-- Central Vision Diamond Core Apex -->
-        <path d="M 50 42 L 55 49 L 50 56 L 45 49 Z" fill="#ffffff" opacity="0.95"/>
-        
-        <!-- Precision Optical Shadow Underlap -->
-        <path d="M 41.5 45 L 45 49 L 41.5 53 Z" fill="rgba(0,0,0,0.35)"/>
-        <path d="M 58.5 45 L 55 49 L 58.5 53 Z" fill="rgba(0,0,0,0.35)"/>
-      </g>
+      <!-- Central Vision Diamond Accent -->
+      <path d="M 50 41 L 54.5 47 L 50 53 L 45.5 47 Z" fill="${c1}"/>
     </svg>
   `;
 }
 window.renderMetroviseLogoSvg = renderMetroviseLogoSvg;
-window.renderAccountixLogoSvg = renderMetroviseLogoSvg; // Backward compatibility alias
+window.renderAccountixLogoSvg = renderMetroviseLogoSvg;
 
 /* ================= SUPABASE CLOUD DATABASE & PERSISTENT STORAGE ENGINE ================= */
 const SUPABASE_URL_KEY = 'accountix_supabase_url';
@@ -3220,15 +3190,17 @@ function render() {
 
   appEl.innerHTML = `
     <div class="sidebar" id="sidebar">
-      <div class="brand-badge">
+      <div class="brand-badge" style="display:flex; align-items:center; gap:10px; padding:12px 14px; margin-bottom:12px;">
         <div class="brand-icon">
-          ${renderMetroviseLogoSvg(38, currentPanel)}
+          ${renderMetroviseLogoSvg(34, currentPanel)}
         </div>
         <div>
-          <div class="brand-title">
-            ${currentPanel === 'admin' ? 'Metro<span style="color:#c084fc;">vise</span> <span style="font-size:11px; font-weight:700; color:#c084fc; background:rgba(168,85,247,0.15); padding:2px 6px; border-radius:4px; margin-left:4px; vertical-align:middle;">HQ</span>' : currentPanel === 'employee' ? `${esc(settings.agencyName || 'Metrovise')} <span style="font-size:10px; color:#34d399; font-weight:700; background:rgba(16,185,129,0.15); padding:2px 5px; border-radius:4px; margin-left:3px; vertical-align:middle;">TEAM</span>` : `Metro<span style="background:linear-gradient(135deg, #c9ada7 0%, #9a8c98 50%, #f2e9e4 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">vise</span>`}
+          <div class="brand-title" style="font-size:16px; font-weight:800; color:var(--text-primary); font-family:'Space Grotesk', sans-serif;">
+            ${currentPanel === 'admin' ? 'Metrovise <span style="font-size:10px; font-weight:700; color:#c084fc; background:rgba(168,85,247,0.15); padding:1px 5px; border-radius:4px;">HQ</span>' : currentPanel === 'employee' ? `${esc(settings.agencyName || 'Metrovise')} <span style="font-size:9px; color:#34d399; font-weight:700; background:rgba(16,185,129,0.15); padding:1px 4px; border-radius:4px;">STAFF</span>` : 'Metrovise'}
           </div>
-          <div class="brand-tagline">${esc(currentPanel === 'admin' ? 'SaaS Management Hub' : currentPanel === 'employee' ? 'Employee Workspace' : settings.tagline || 'Business Operating System')}</div>
+          <div class="brand-tagline" style="font-size:10px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;">
+            ${esc(currentPanel === 'admin' ? 'Platform Admin' : currentPanel === 'employee' ? 'Staff Portal' : (settings.agencyName || 'Business OS'))}
+          </div>
         </div>
       </div>
 
@@ -3596,43 +3568,43 @@ function renderLandingGateway() {
   const prefillEmail = window._incomingInviteEmail || '';
 
   return `
-    <div style="min-height:100vh; width:100%; background:linear-gradient(135deg, #171726 0%, #1d1d2f 50%, #22223b 100%); display:flex; flex-direction:column; justify-content:center; align-items:center; padding:32px 18px; box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif;">
+    <div style="min-height:100vh; width:100%; background:#10101a; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:24px 16px; box-sizing:border-box; font-family:'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;">
       
-      <!-- Top Brand Header -->
-      <div style="width:100%; max-width:460px; display:flex; flex-direction:column; align-items:center; margin-bottom:24px; text-align:center;">
-        <div style="width:68px; height:68px; margin-bottom:14px; filter:drop-shadow(0 10px 24px rgba(74,78,105,0.45));">
-          ${renderMetroviseLogoSvg(68, 'brand')}
+      <!-- Brand Header -->
+      <div style="width:100%; max-width:400px; display:flex; flex-direction:column; align-items:center; margin-bottom:28px; text-align:center;">
+        <div style="margin-bottom:12px;">
+          ${renderMetroviseLogoSvg(52, 'brand')}
         </div>
-        <div style="font-size:28px; font-weight:800; font-family:'Space Grotesk', sans-serif; letter-spacing:-0.5px; color:#ffffff; display:flex; align-items:center; gap:2px;">
-          Metro<span style="background:linear-gradient(135deg, #c9ada7 0%, #9a8c98 50%, #f2e9e4 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">vise</span>
-        </div>
-        <div style="font-size:13px; color:#c9ada7; font-weight:500; margin-top:4px;">Executive Multi-Profession Operating System & Financial Engine</div>
+        <h1 style="font-size:24px; font-weight:800; font-family:'Space Grotesk', sans-serif; letter-spacing:-0.5px; color:#ffffff; margin:0 0 4px 0;">
+          Metrovise
+        </h1>
+        <p style="font-size:13px; color:#9a8c98; margin:0; font-weight:500;">
+          Agency Business OS & Financial Engine
+        </p>
       </div>
 
-      <!-- Unified Auth Card -->
-      <div style="width:100%; max-width:460px; background:#22223b; border:1px solid #4a4e69; border-radius:20px; padding:28px 24px; box-shadow:0 20px 40px rgba(0,0,0,0.5); position:relative; overflow:hidden;">
-        <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #9a8c98, #c9ada7, #4a4e69);"></div>
-
+      <!-- Auth Container Card -->
+      <div style="width:100%; max-width:400px; background:#181826; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:28px 24px; box-shadow:0 24px 48px rgba(0,0,0,0.5); box-sizing:border-box;">
+        
         ${isEmployeeInvite ? `
-          <!-- Staff Portal Welcome Banner -->
-          <div style="background:rgba(52, 211, 153, 0.12); border:1px solid rgba(52, 211, 153, 0.35); border-radius:10px; padding:12px 14px; margin-bottom:18px; color:#34d399; font-size:12.5px; text-align:center; line-height:1.5;">
-            👥 <b>Staff Workspace Sign-In</b><br>
-            <span style="font-size:11.5px; color:#a7f3d0;">Please sign in with the temporary password from your invitation email to access your personal employee portal.</span>
+          <!-- Staff Welcome Notice -->
+          <div style="background:rgba(52, 211, 153, 0.1); border:1px solid rgba(52, 211, 153, 0.25); border-radius:8px; padding:10px 12px; margin-bottom:18px; color:#34d399; font-size:12px; text-align:center;">
+            👥 <b>Staff Portal Sign-In</b> · Enter your assigned credentials
           </div>
-        ` : ''}
-
-        <!-- Card Title -->
-        <div style="margin-bottom:20px; text-align:center;">
-          <h2 style="font-size:19px; font-weight:800; color:#f2e9e4; margin:0 0 4px 0;">
-            ${isReg ? 'Create Your Agency Workspace' : isEmployeeInvite ? 'Sign In to Employee Portal' : 'Sign In to Your Workspace'}
-          </h2>
-          <div style="font-size:12.5px; color:#c9ada7;">
-            ${isReg ? 'Start your workspace in seconds' : isEmployeeInvite ? 'Direct access to your tasks, shoots, attendance & salary slips' : 'Choose Google Sign-In or enter your credentials'}
+        ` : `
+          <!-- Mode Tabs (Sign In / Register) -->
+          <div style="display:flex; background:#12121e; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:3px; margin-bottom:20px;">
+            <button type="button" onclick="setAuthMode('login')" style="flex:1; padding:8px; border-radius:6px; border:none; background:${!isReg ? '#252538' : 'transparent'}; color:${!isReg ? '#ffffff' : '#9a8c98'}; font-weight:${!isReg ? '700' : '600'}; font-size:13px; cursor:pointer; transition:all 0.15s ease;">
+              Sign In
+            </button>
+            <button type="button" onclick="setAuthMode('register')" style="flex:1; padding:8px; border-radius:6px; border:none; background:${isReg ? '#252538' : 'transparent'}; color:${isReg ? '#ffffff' : '#9a8c98'}; font-weight:${isReg ? '700' : '600'}; font-size:13px; cursor:pointer; transition:all 0.15s ease;">
+              Register Agency
+            </button>
           </div>
-        </div>
+        `}
 
-        <!-- 1-Click Google Sign-In Button -->
-        <button onclick="signInWithGoogle('${isEmployeeInvite ? 'employee' : 'manager'}')" style="width:100%; background:#ffffff; color:#0f172a; font-weight:800; font-size:14px; border:none; padding:12px 16px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.15); transition:transform 0.15s ease;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
+        <!-- 1-Click Google Sign-In -->
+        <button onclick="signInWithGoogle('${isEmployeeInvite ? 'employee' : 'manager'}')" style="width:100%; background:#ffffff; color:#0f172a; font-weight:700; font-size:13.5px; border:none; padding:11px 16px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; transition:background 0.15s ease;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#ffffff'">
           <svg width="18" height="18" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
             <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.35 24 12 24z"/>
@@ -3642,72 +3614,61 @@ function renderLandingGateway() {
           Continue with Google
         </button>
 
-        <!-- Divider -->
-        <div style="display:flex; align-items:center; gap:12px; margin:20px 0;">
-          <div style="flex:1; height:1px; background:#4a4e69;"></div>
-          <div style="font-size:11px; font-weight:700; color:#9a8c98; text-transform:uppercase; letter-spacing:0.5px;">or password credentials</div>
-          <div style="flex:1; height:1px; background:#4a4e69;"></div>
+        <!-- Minimalist Divider -->
+        <div style="display:flex; align-items:center; gap:10px; margin:16px 0;">
+          <div style="flex:1; height:1px; background:rgba(255,255,255,0.08);"></div>
+          <span style="font-size:11px; font-weight:600; color:#6d6477; text-transform:uppercase;">or</span>
+          <div style="flex:1; height:1px; background:rgba(255,255,255,0.08);"></div>
         </div>
 
         <!-- Form Fields -->
         <form id="gatewayAuthForm" onsubmit="submitGatewayAuthForm(); return false;">
           ${isReg ? `
-            <div class="field" style="margin-bottom:14px;">
-              <label style="color:#f2e9e4; font-size:12px; font-weight:600;">Your Full Name *</label>
-              <input type="text" id="gateway_reg_name" placeholder="e.g. Jeet Rakholiya" value="" style="background:#1d1d2f; border:1px solid #4a4e69; color:#f2e9e4; border-radius:8px; padding:11px 12px; width:100%; box-sizing:border-box;" required />
+            <div style="margin-bottom:12px;">
+              <label style="display:block; color:#c9ada7; font-size:11.5px; font-weight:600; margin-bottom:5px;">Full Name</label>
+              <input type="text" id="gateway_reg_name" placeholder="Alex Rivera" value="" style="background:#12121e; border:1px solid rgba(255,255,255,0.1); color:#ffffff; border-radius:8px; padding:10px 12px; width:100%; box-sizing:border-box; font-size:13.5px; outline:none;" required />
             </div>
 
-            <div class="field" style="margin-bottom:14px;">
-              <label style="color:#f2e9e4; font-size:12px; font-weight:600;">Agency / Business Name *</label>
-              <input type="text" id="gateway_reg_agency_name" placeholder="e.g. Velocity Media Agency" value="" style="background:#1d1d2f; border:1px solid #4a4e69; color:#f2e9e4; border-radius:8px; padding:11px 12px; width:100%; box-sizing:border-box;" required />
+            <div style="margin-bottom:12px;">
+              <label style="display:block; color:#c9ada7; font-size:11.5px; font-weight:600; margin-bottom:5px;">Agency Name</label>
+              <input type="text" id="gateway_reg_agency_name" placeholder="Velocity Media Labs" value="" style="background:#12121e; border:1px solid rgba(255,255,255,0.1); color:#ffffff; border-radius:8px; padding:10px 12px; width:100%; box-sizing:border-box; font-size:13.5px; outline:none;" required />
             </div>
 
-            <div class="field" style="margin-bottom:14px;">
-              <label style="color:#f2e9e4; font-size:12px; font-weight:600;">Account Role / Type *</label>
-              <select id="gateway_reg_role" style="background:#1d1d2f; border:1px solid #4a4e69; color:#f2e9e4; border-radius:8px; padding:11px 12px; width:100%; box-sizing:border-box; font-size:13px; font-weight:600;">
-                <option value="manager">🏢 Agency Director / Owner (Full Business OS)</option>
-                <option value="employee">👥 Staff / Team Specialist (Task & Studio Portal)</option>
+            <div style="margin-bottom:12px; display:none;">
+              <select id="gateway_reg_role">
+                <option value="manager" selected>Manager</option>
               </select>
             </div>
           ` : ''}
 
-          <div class="field" style="margin-bottom:14px;">
-            <label style="color:#f2e9e4; font-size:12px; font-weight:600;">Official Email Address *</label>
-            <input type="email" id="gateway_email" placeholder="e.g. name@agency.com" value="${esc(prefillEmail)}" style="background:#1d1d2f; border:1px solid #4a4e69; color:#f2e9e4; border-radius:8px; padding:11px 12px; width:100%; box-sizing:border-box;" required autofocus />
+          <div style="margin-bottom:12px;">
+            <label style="display:block; color:#c9ada7; font-size:11.5px; font-weight:600; margin-bottom:5px;">Email Address</label>
+            <input type="email" id="gateway_email" placeholder="name@agency.com" value="${esc(prefillEmail)}" style="background:#12121e; border:1px solid rgba(255,255,255,0.1); color:#ffffff; border-radius:8px; padding:10px 12px; width:100%; box-sizing:border-box; font-size:13.5px; outline:none;" required autofocus />
           </div>
 
-          <div class="field" style="margin-bottom:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <label style="color:#f2e9e4; font-size:12px; font-weight:600; margin-bottom:0;">Account Password *</label>
+          <div style="margin-bottom:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+              <label style="color:#c9ada7; font-size:11.5px; font-weight:600; margin:0;">Password</label>
               ${!isReg ? `
-                <a href="javascript:void(0)" onclick="openForgotPasswordModal()" style="color:#c9ada7; font-size:11.5px; font-weight:600; text-decoration:none; transition:color 0.15s;" onmouseover="this.style.color='#f2e9e4'" onmouseout="this.style.color='#c9ada7'">
-                  Forgot Password?
+                <a href="javascript:void(0)" onclick="openForgotPasswordModal()" style="color:#9a8c98; font-size:11px; text-decoration:none;" onmouseover="this.style.color='#f2e9e4'" onmouseout="this.style.color='#9a8c98'">
+                  Forgot?
                 </a>
               ` : ''}
             </div>
-            <input type="password" id="gateway_password" placeholder="Enter your password" value="" style="background:#1d1d2f; border:1px solid #4a4e69; color:#f2e9e4; border-radius:8px; padding:11px 12px; width:100%; box-sizing:border-box;" required />
-            <div id="gateway_auth_error_box" style="display:none; margin-top:10px; font-size:12px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); border-radius:8px; padding:10px 12px; color:#fca5a5; line-height:1.45;"></div>
+            <input type="password" id="gateway_password" placeholder="••••••••" value="" style="background:#12121e; border:1px solid rgba(255,255,255,0.1); color:#ffffff; border-radius:8px; padding:10px 12px; width:100%; box-sizing:border-box; font-size:13.5px; outline:none;" required />
+            <div id="gateway_auth_error_box" style="display:none; margin-top:10px; font-size:12px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:8px 10px; color:#fca5a5; line-height:1.4;"></div>
           </div>
 
-          <button id="btnSubmitGateway" type="submit" style="width:100%; background:linear-gradient(135deg, #4a4e69, #22223b); border:1px solid #c9ada7; color:#f2e9e4; font-weight:800; font-size:14px; padding:13px; border-radius:10px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.35);">
-            ${isReg ? 'Create Account & Enter Workspace ➔' : isEmployeeInvite ? 'Sign In to Employee Portal ➔' : 'Sign In to Workspace ➔'}
+          <button id="btnSubmitGateway" type="submit" style="width:100%; background:linear-gradient(135deg, #c9ada7, #9a8c98); border:none; color:#10101a; font-weight:800; font-size:13.5px; padding:12px; border-radius:8px; cursor:pointer; transition:opacity 0.15s ease;" onmouseover="this.style.opacity='0.92'" onmouseout="this.style.opacity='1'">
+            ${isReg ? 'Create Agency Workspace ➔' : isEmployeeInvite ? 'Sign In to Employee Portal ➔' : 'Sign In ➔'}
           </button>
         </form>
 
-        <!-- Toggle Mode Link -->
-        <div style="text-align:center; margin-top:18px; font-size:12.5px; color:#c9ada7;">
-          ${isReg ? `
-            Already have an account? <a href="javascript:void(0)" onclick="setAuthMode('login')" style="color:#f2e9e4; font-weight:700; text-decoration:underline;">Sign In</a>
-          ` : `
-            Don't have an account? <a href="javascript:void(0)" onclick="setAuthMode('register')" style="color:#f2e9e4; font-weight:700; text-decoration:underline;">Register New Agency</a>
-          `}
-        </div>
-
       </div>
 
-      <!-- Footer -->
-      <div style="text-align:center; color:#9a8c98; font-size:11.5px; font-weight:500; margin-top:20px;">
-        Metrovise Enterprise Suite (metrovise.com) · Protected by 256-bit TLS & Verified JWT
+      <!-- Clean Footer -->
+      <div style="text-align:center; color:#6d6477; font-size:11px; margin-top:24px;">
+        Metrovise Business OS · Enterprise Platform (metrovise.com)
       </div>
     </div>
   `;
