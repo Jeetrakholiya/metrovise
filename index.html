@@ -3792,20 +3792,32 @@ async function submitGatewayAuthForm() {
 
     // 3. Multi-Layer Fallback: Search in local state vault, localStorage, staff roster, & DEMO_PROFILES
     if (!user) {
+      const staffMatch = (STATE.staff || []).find(st => (st.email && st.email.toLowerCase().trim() === cleanEmail) || (st.phone && st.phone.toLowerCase().trim() === cleanEmail));
       let localMatch = (STATE.allUsers || []).find(u => u.email && u.email.toLowerCase().trim() === cleanEmail) ||
                        DEMO_PROFILES.find(p => p.email && p.email.toLowerCase().trim() === cleanEmail);
 
-      // Check STATE.staff
-      if (!localMatch) {
-        const staffMatch = (STATE.staff || []).find(st => (st.email && st.email.toLowerCase().trim() === cleanEmail) || (st.phone && st.phone.toLowerCase().trim() === cleanEmail));
-        if (staffMatch) {
-          localMatch = {
-            id: `usr_emp_${staffMatch.id}`,
+      const expectedStaffPass = staffMatch ? staffMatch.defaultPassword : null;
+      const expectedUserPass = localMatch ? localMatch.password : null;
+      const isEmployeeLogin = window._incomingRole === 'employee' || (staffMatch && (pass === expectedStaffPass || !localMatch));
+
+      const isPasswordCorrect =
+        (expectedStaffPass && pass === expectedStaffPass) ||
+        (expectedUserPass && pass === expectedUserPass) ||
+        (isSuperAdminEmail && pass === 'Jeet@2005') ||
+        pass === 'staff@123' || pass === 'agency@123' || pass === 'user@123' ||
+        (!expectedStaffPass && !expectedUserPass);
+
+      if (isPasswordCorrect && (localMatch || staffMatch || (isSuperAdminEmail && pass === 'Jeet@2005'))) {
+        if (isEmployeeLogin && staffMatch) {
+          user = {
+            ...(localMatch || {}),
+            id: localMatch ? localMatch.id : `usr_emp_${staffMatch.id}`,
             name: staffMatch.name,
-            email: staffMatch.email || cleanEmail,
-            password: staffMatch.defaultPassword || pass,
+            email: cleanEmail,
+            password: pass,
             mustChangePassword: true,
             role: 'employee',
+            isSuperAdmin: false,
             staffId: staffMatch.id,
             companyId: 'comp_1',
             companyName: STATE.settings.agencyName || 'Metrovise Media HQ',
@@ -3816,58 +3828,50 @@ async function submitGatewayAuthForm() {
             plan: 'Enterprise Suite'
           };
           if (!STATE.allUsers) STATE.allUsers = [];
-          STATE.allUsers.push(localMatch);
-        }
-      }
-
-      if (localMatch) {
-        // Verify Password
-        if (isSuperAdminEmail && pass === 'Jeet@2005') {
-          user = { ...localMatch, role: 'admin', isSuperAdmin: true };
-        } else if (localMatch.password && (localMatch.password === pass || pass === 'staff@123' || pass === 'agency@123' || pass === 'user@123')) {
+          const exIdx = STATE.allUsers.findIndex(u => u.email && u.email.toLowerCase() === cleanEmail);
+          if (exIdx >= 0) STATE.allUsers[exIdx] = user;
+          else STATE.allUsers.push(user);
+        } else if (isSuperAdminEmail && pass === 'Jeet@2005' && !isEmployeeLogin) {
+          user = {
+            id: 'usr_super_jeet',
+            name: 'Jeet Rakholiya',
+            email: cleanEmail,
+            password: 'Jeet@2005',
+            role: 'admin',
+            isSuperAdmin: true,
+            companyId: 'comp_1',
+            companyName: 'Metrovise Platform HQ',
+            title: 'Platform Super Admin & Founder',
+            avatar: '👑',
+            status: 'Active',
+            purchasedDate: '2026-01-01',
+            plan: 'Enterprise Suite'
+          };
+        } else if (localMatch) {
           user = { ...localMatch };
-        } else if (!localMatch.password) {
-          // If account had no password yet, set it now
-          localMatch.password = pass;
-          user = { ...localMatch };
-        } else {
-          // Password Mismatch
-          if (btn) btn.innerHTML = 'Sign In to Workspace ➔';
-          if (errBox) {
-            errBox.innerHTML = `
-              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-                <span>❌ Incorrect password for this account.</span>
-                <a href="javascript:void(0)" onclick="openForgotPasswordModal('${esc(cleanEmail)}')" style="color:#ffffff; font-weight:800; text-decoration:underline; cursor:pointer;">
-                  Forgot Password? Reset here ➔
-                </a>
-              </div>
-            `;
-            errBox.style.display = 'block';
-          }
-          toast('❌ Incorrect password. Click "Forgot Password?" to reset.');
-          return;
+          if (!user.password) user.password = pass;
         }
 
         // Auto-heal backend by registering/syncing
-        if (window.AccountiX_API && typeof window.AccountiX_API.register === 'function') {
+        if (user && window.AccountiX_API && typeof window.AccountiX_API.register === 'function') {
           window.AccountiX_API.register(user.name, user.email, pass, pass, user.role).catch(() => {});
         }
-      } else if (isSuperAdminEmail && pass === 'Jeet@2005') {
-        user = {
-          id: 'usr_super_jeet',
-          name: 'Jeet Rakholiya',
-          email: cleanEmail,
-          password: 'Jeet@2005',
-          role: 'admin',
-          isSuperAdmin: true,
-          companyId: 'comp_1',
-          companyName: 'Metrovise Platform HQ',
-          title: 'Platform Super Admin & Founder',
-          avatar: '👑',
-          status: 'Active',
-          purchasedDate: '2026-01-01',
-          plan: 'Enterprise Suite'
-        };
+      } else {
+        // Password Mismatch
+        if (btn) btn.innerHTML = 'Sign In to Workspace ➔';
+        if (errBox) {
+          errBox.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+              <span>❌ Incorrect password for this account.</span>
+              <a href="javascript:void(0)" onclick="openForgotPasswordModal('${esc(cleanEmail)}')" style="color:#ffffff; font-weight:800; text-decoration:underline; cursor:pointer;">
+                Forgot Password? Reset here ➔
+              </a>
+            </div>
+          `;
+          errBox.style.display = 'block';
+        }
+        toast('❌ Incorrect password. Click "Forgot Password?" to reset.');
+        return;
       }
     }
   }

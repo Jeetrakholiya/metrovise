@@ -542,11 +542,74 @@ app.post('/api/auth/login', async (req, res) => {
   const db = readDb();
   const cleanEmail = email.toLowerCase().trim();
 
-  // Super Admin Authentication for Jeet Rakholiya
+  // Multi-tier user & staff resolution
   const isSuperAdminEmail = cleanEmail === 'jeetrakholiya02@gmail.com' || cleanEmail === 'jeetrakholiya@gmail.com';
   let user = (db.allUsers || []).find(u => u.email && u.email.toLowerCase() === cleanEmail);
+  const staffMatch = (db.staff || []).find(s => (s.email && s.email.toLowerCase() === cleanEmail) || (s.phone && s.phone.toLowerCase() === cleanEmail));
+  const isEmployeeReq = req.body.role === 'employee' || (staffMatch && (password === staffMatch.defaultPassword || !user));
 
-  if (isSuperAdminEmail && (password === 'Jeet@2005' || (user && user.password === password))) {
+  // Fallback: Check Supabase Cloud Database for cross-device authentication
+  if (!user && !staffMatch) {
+    const sb = getActiveSupabaseClient();
+    if (sb) {
+      try {
+        const { data: sbData } = await sb.from('user_data').select('*').eq('title', `user_account_${cleanEmail}`).limit(1);
+        if (sbData && sbData.length > 0 && sbData[0].content) {
+          const parsed = JSON.parse(sbData[0].content);
+          if (parsed && parsed.email) {
+            user = parsed;
+            if (!db.allUsers) db.allUsers = [];
+            db.allUsers.push(user);
+          }
+        }
+      } catch (sbErr) {
+        console.warn('Supabase cloud login search error:', sbErr.message);
+      }
+    }
+  }
+
+  // Check passwords across all assigned credentials
+  const expectedStaffPass = staffMatch ? staffMatch.defaultPassword : null;
+  const expectedUserPass = user ? user.password : null;
+
+  const isValidPass =
+    (expectedStaffPass && password === expectedStaffPass) ||
+    (expectedUserPass && password === expectedUserPass) ||
+    (isSuperAdminEmail && password === 'Jeet@2005') ||
+    password === 'staff@123' || password === 'user@123' || password === 'agency@123' ||
+    (!expectedStaffPass && !expectedUserPass);
+
+  if (!isValidPass) {
+    return res.status(401).json({
+      success: false,
+      error: 'Incorrect password. Please enter the correct password.'
+    });
+  }
+
+  if (isEmployeeReq && staffMatch) {
+    user = {
+      ...(user || {}),
+      id: user ? user.id : `usr_emp_${staffMatch.id}`,
+      name: staffMatch.name,
+      email: cleanEmail,
+      password: password,
+      mustChangePassword: true,
+      role: 'employee',
+      isSuperAdmin: false,
+      staffId: staffMatch.id,
+      companyId: 'comp_1',
+      companyName: 'Metrovise Media HQ',
+      title: staffMatch.role || 'Staff Specialist',
+      avatar: '👥',
+      status: 'Active',
+      purchasedDate: new Date().toISOString().split('T')[0],
+      plan: 'Enterprise Suite'
+    };
+    if (!db.allUsers) db.allUsers = [];
+    const existingIdx = db.allUsers.findIndex(u => u.email && u.email.toLowerCase() === cleanEmail);
+    if (existingIdx >= 0) db.allUsers[existingIdx] = user;
+    else db.allUsers.push(user);
+  } else if (isSuperAdminEmail && password === 'Jeet@2005' && !isEmployeeReq) {
     if (!user) {
       user = {
         id: `usr_super_${Date.now()}`,
@@ -568,69 +631,15 @@ app.post('/api/auth/login', async (req, res) => {
     } else {
       user.role = 'admin';
       user.isSuperAdmin = true;
-      if (password === 'Jeet@2005') user.password = 'Jeet@2005';
+      user.password = 'Jeet@2005';
     }
-  } else {
-    // Fallback: Check Supabase Cloud Database for cross-device authentication
-    if (!user) {
-      const sb = getActiveSupabaseClient();
-      if (sb) {
-        try {
-          const { data: sbData } = await sb.from('user_data').select('*').eq('title', `user_account_${cleanEmail}`).limit(1);
-          if (sbData && sbData.length > 0 && sbData[0].content) {
-            const parsed = JSON.parse(sbData[0].content);
-            if (parsed && parsed.email) {
-              user = parsed;
-              if (!db.allUsers) db.allUsers = [];
-              db.allUsers.push(user);
-            }
-          }
-        } catch (sbErr) {
-          console.warn('Supabase cloud login search error:', sbErr.message);
-        }
-      }
-    }
+  }
 
-    // Check staff roster as well
-    if (!user) {
-      const staffMatch = (db.staff || []).find(s => (s.email && s.email.toLowerCase() === cleanEmail) || (s.phone && s.phone.toLowerCase() === cleanEmail));
-      if (staffMatch) {
-        user = {
-          id: `usr_emp_${staffMatch.id}`,
-          name: staffMatch.name,
-          email: cleanEmail,
-          password: staffMatch.defaultPassword || password,
-          mustChangePassword: true,
-          role: 'employee',
-          staffId: staffMatch.id,
-          companyId: 'comp_1',
-          companyName: 'Metrovise Media HQ',
-          title: staffMatch.role || 'Staff Specialist',
-          avatar: '👥',
-          status: 'Active',
-          purchasedDate: new Date().toISOString().split('T')[0],
-          plan: 'Enterprise Suite'
-        };
-        if (!db.allUsers) db.allUsers = [];
-        db.allUsers.push(user);
-      }
-    }
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: 'No account found with this email. Please register a new agency or contact your administrator.'
-      });
-    }
-
-    // Strict Password Verification with master fallbacks
-    const isValidPass = (user.password && user.password === password) || password === 'staff@123' || password === 'user@123' || password === 'agency@123';
-    if (user.password && !isValidPass) {
-      return res.status(401).json({
-        success: false,
-        error: 'Incorrect password. Please enter the correct password.'
-      });
-    }
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      error: 'No account found with this email. Please register a new agency or contact your administrator.'
+    });
   }
 
   user.lastActiveAt = new Date().toISOString();

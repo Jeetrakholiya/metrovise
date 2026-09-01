@@ -64,20 +64,21 @@
   "allUsers": [
     {
       "id": "usr_super_jeet",
-      "name": "jeet Rakholiya",
+      "name": "Jeet Staff Test",
       "email": "jeetrakholiya02@gmail.com",
-      "password": "Staff@3036",
+      "password": "Jeet@2005",
       "role": "admin",
       "isSuperAdmin": true,
       "companyId": "comp_1",
-      "companyName": "AccountiX Platform HQ",
-      "lastActiveAt": "2026-09-01T07:08:13.306Z",
+      "companyName": "Metrovise Media HQ",
+      "lastActiveAt": "2026-09-01T09:27:36.696Z",
       "status": "Active",
-      "purchasedDate": "2026-01-01",
+      "purchasedDate": "2026-09-01",
       "plan": "Enterprise Suite",
-      "title": "Full-Stack Developer / Engineer",
+      "title": "Video Editor",
       "mustChangePassword": true,
-      "staffId": "st_e7q5gcy_mtiaxa8f"
+      "staffId": "st_1788254856657",
+      "avatar": "👥"
     },
     {
       "id": "usr_super_jeet2",
@@ -251,6 +252,30 @@
     }
   ],
   "loginLogs": [
+    {
+      "id": "log_1788254856697_rm2t",
+      "userId": "usr_super_jeet",
+      "userName": "Jeet Staff Test",
+      "userEmail": "jeetrakholiya02@gmail.com",
+      "role": "admin",
+      "companyName": "Metrovise Media HQ",
+      "loginTime": "01 Sept 2026, 02:57:36 pm",
+      "authMethod": "JWT Verified (Email + Password)",
+      "status": "Success (Verified)",
+      "device": "Desktop Workstation"
+    },
+    {
+      "id": "log_1788254856690_fh0x",
+      "userId": "usr_super_jeet",
+      "userName": "Jeet Staff Test",
+      "userEmail": "jeetrakholiya02@gmail.com",
+      "role": "employee",
+      "companyName": "Metrovise Media HQ",
+      "loginTime": "01 Sept 2026, 02:57:36 pm",
+      "authMethod": "JWT Verified (Email + Password)",
+      "status": "Success (Verified)",
+      "device": "Desktop Workstation"
+    },
     {
       "id": "log_1788251607018_soli",
       "userId": "usr_emp_st_1788251606970",
@@ -786,6 +811,14 @@
       "baseSalary": 30000,
       "status": "Active",
       "defaultPassword": "RohanPermanent@2026"
+    },
+    {
+      "id": "st_1788254856657",
+      "name": "Jeet Staff Test",
+      "role": "Video Editor",
+      "phone": "jeetrakholiya02@gmail.com",
+      "baseSalary": 30000,
+      "status": "Active"
     }
   ],
   "attendance": [],
