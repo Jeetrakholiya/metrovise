@@ -2971,10 +2971,10 @@ window.closeModal = closeModal;
 /* ================= NAVIGATION HISTORY & BACK ARROW CONTROLLER ================= */
 function navigateTo(newView) {
   const role = (STATE.currentUser && STATE.currentUser.role) || 'manager';
-  const isSuperAdmin = STATE.currentUser && (STATE.currentUser.role === 'admin' || STATE.currentUser.isSuperAdmin || (STATE.currentUser.email && STATE.currentUser.email.toLowerCase().includes('jeetrakholiya')));
+  const isSuperAdmin = role === 'admin' && STATE.currentUser && (STATE.currentUser.isSuperAdmin || STATE.currentUser.role === 'admin');
 
   // Strict RBAC Guard: If user is an employee, only allow employee workspace views
-  if (role === 'employee' && !isSuperAdmin) {
+  if (role === 'employee') {
     const allowedEmpViews = ['emp_workspace', 'emp_attendance', 'emp_content', 'emp_tasks', 'emp_payslips', 'user_data'];
     if (!allowedEmpViews.includes(newView)) {
       toast('⚠️ Restricted Access: Staff accounts have access to Employee Workspace only.');
@@ -3039,8 +3039,12 @@ window.navigateBack = navigateBack;
 /* ================= DYNAMIC RBAC NAVIGATION ITEMS & 3-PANEL SYSTEM ================= */
 function switchAdminPanel(panel) {
   const user = STATE.currentUser || {};
-  const isSuperAdmin = user.role === 'admin' || user.isSuperAdmin || (user.email && user.email.toLowerCase().includes('jeetrakholiya'));
-  if (!isSuperAdmin && user.role !== 'admin') return;
+  if (user.role === 'employee') {
+    toast('⚠️ Access Restricted: Staff accounts have access to Employee Workspace only.');
+    return;
+  }
+  const isSuperAdmin = user.role === 'admin' && (user.isSuperAdmin === true || (user.email && (user.email === 'admin@metrovise.com' || user.email === 'jeetrakholiya02@gmail.com')));
+  if (!isSuperAdmin) return;
   STATE.activePanel = panel;
   if (panel === 'admin') {
     STATE.view = 'admin_overview';
@@ -3057,7 +3061,17 @@ window.switchAdminPanel = switchAdminPanel;
 
 function getNavItems() {
   const user = STATE.currentUser || {};
-  const isSuperAdmin = user.role === 'admin' || user.isSuperAdmin || (user.email && user.email.toLowerCase().includes('jeetrakholiya'));
+  if (user.role === 'employee') {
+    return [
+      { id: 'emp_workspace', label: 'My Workspace', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' },
+      { id: 'emp_attendance', label: 'My Attendance & Punch', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' },
+      { id: 'emp_content', label: 'My Shoots & Edits', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>' },
+      { id: 'emp_tasks', label: 'My Tasks & Deadlines', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>' },
+      { id: 'emp_payslips', label: 'My Salary & Slips', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="3"/><path d="M6 6V5a2 2 0 012-2h8a2 2 0 012 2v1"/></svg>' }
+    ];
+  }
+
+  const isSuperAdmin = user.role === 'admin' && (user.isSuperAdmin === true || (user.email && (user.email === 'admin@metrovise.com' || user.email === 'jeetrakholiya02@gmail.com')));
   const currentPanel = isSuperAdmin ? (STATE.activePanel || 'admin') : (user.role || 'manager');
 
   if (currentPanel === 'admin') {
@@ -3070,14 +3084,6 @@ function getNavItems() {
       { id: 'admin_plans', label: 'SaaS Plans & Tiers', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>' },
       { id: 'user_data', label: 'Persistent Vault', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' },
       { id: 'settings', label: 'System & Security', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.9 2.9l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.6V19a2 2 0 11-4 0v-.2a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.9-2.9l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.6-1H5a2 2 0 110-4h.2a1.7 1.7 0 001.6-1 1.7 1.7 0 001.6-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.9-2.9l.1.1a1.7 1.7 0 001.9.3H11a1.7 1.7 0 001-1.6V3a2 2 0 114 0v.2a1.7 1.7 0 001 1.6 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.9 2.9l-.1.1a1.7 1.7 0 00-.3 1.9V11a1.7 1.7 0 001.6 1H21a2 2 0 110 4h-.2a1.7 1.7 0 00-1.6 1z"/></svg>' }
-    ];
-  } else if (currentPanel === 'employee') {
-    return [
-      { id: 'emp_workspace', label: 'My Workspace', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' },
-      { id: 'emp_attendance', label: 'My Attendance & Punch', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' },
-      { id: 'emp_content', label: 'My Shoots & Edits', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>' },
-      { id: 'emp_tasks', label: 'My Tasks & Deadlines', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>' },
-      { id: 'emp_payslips', label: 'My Salary & Slips', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="3"/><path d="M6 6V5a2 2 0 012-2h8a2 2 0 012 2v1"/></svg>' }
     ];
   } else {
     // Agency Manager (Full Agency Business OS)
@@ -3133,12 +3139,13 @@ function render() {
   const settings = STATE.settings;
   const isDark = (settings.theme || 'dark') === 'dark';
   const user = STATE.currentUser || DEMO_PROFILES[1];
-  const isSuperAdmin = user.role === 'admin' || user.isSuperAdmin || (user.email && user.email.toLowerCase().includes('jeetrakholiya'));
-  const currentPanel = isSuperAdmin ? (STATE.activePanel || 'admin') : (user.role || 'manager');
+  const isEmployee = user.role === 'employee';
+  const isSuperAdmin = !isEmployee && user.role === 'admin' && (user.isSuperAdmin === true || (user.email && (user.email === 'admin@metrovise.com' || user.email === 'jeetrakholiya02@gmail.com' && !user.staffId)));
+  const currentPanel = isEmployee ? 'employee' : (isSuperAdmin ? (STATE.activePanel || 'admin') : (user.role || 'manager'));
   const navItems = getNavItems();
 
-  const roleTitle = isSuperAdmin ? 'Platform Super Admin' : user.role === 'manager' ? 'Managing Director' : 'Staff Specialist';
-  const roleBadgeColor = isSuperAdmin ? 'background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3);' : user.role === 'manager' ? 'background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3);' : 'background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3);';
+  const roleTitle = isSuperAdmin ? 'Platform Super Admin' : isEmployee ? (user.title || 'Staff Specialist') : 'Managing Director';
+  const roleBadgeColor = isSuperAdmin ? 'background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3);' : isEmployee ? 'background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3);' : 'background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3);';
 
   appEl.innerHTML = `
     <div class="sidebar" id="sidebar">
@@ -3885,19 +3892,21 @@ async function submitGatewayAuthForm() {
   // Update password into current state record
   if (pass) user.password = pass;
 
-  if (isSuperAdminEmail) {
-    user.role = 'admin';
-    user.isSuperAdmin = true;
-    STATE.activePanel = 'admin';
-    STATE.view = 'admin_overview';
-  } else if (user.role === 'employee' || window._incomingRole === 'employee') {
+  if (user.role === 'employee' || window._incomingRole === 'employee' || !!user.staffId) {
     user.role = 'employee';
     user.isSuperAdmin = false;
     STATE.activePanel = 'employee';
     STATE.view = 'emp_workspace';
+  } else if (isSuperAdminEmail && user.role === 'admin') {
+    user.role = 'admin';
+    user.isSuperAdmin = true;
+    STATE.activePanel = 'admin';
+    STATE.view = 'admin_overview';
   } else {
-    STATE.activePanel = user.role || 'manager';
-    STATE.view = user.role === 'employee' ? 'emp_workspace' : 'dashboard';
+    user.role = user.role || 'manager';
+    user.isSuperAdmin = false;
+    STATE.activePanel = user.role;
+    STATE.view = 'dashboard';
   }
 
   STATE.currentUser = { ...user };
