@@ -1528,6 +1528,10 @@ function initSupabaseClient() {
       if (_supabaseClient.auth && !_sbAuthSubscription) {
         const { data: { subscription } } = _supabaseClient.auth.onAuthStateChange(async (event, session) => {
           console.log('⚡ Supabase Auth Event:', event);
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('role') === 'employee' || window._incomingRole === 'employee') {
+            return; // Never auto-login as admin when opening an employee portal URL
+          }
           if (session && session.user) {
             const sbUser = session.user;
             const cleanEmail = (sbUser.email || '').toLowerCase().trim();
@@ -1540,7 +1544,7 @@ function initSupabaseClient() {
               role: isSuperAdminEmail ? 'admin' : ((sbUser.user_metadata && sbUser.user_metadata.role) || 'manager'),
               isSuperAdmin: isSuperAdminEmail,
               avatar: (sbUser.user_metadata && sbUser.user_metadata.avatar_url) || (isSuperAdminEmail ? '👑' : '🏢'),
-              companyName: STATE.settings ? STATE.settings.agencyName : 'AccountiX Media HQ'
+              companyName: STATE.settings ? STATE.settings.agencyName : 'Metrovise Media HQ'
             };
             STATE.isAuthenticated = true;
             if (isSuperAdminEmail) {
@@ -2334,6 +2338,7 @@ async function loadState() {
   }
 
   // Handle URL Query Parameters (e.g. Employee Invite link clicked from Email)
+  let isEmployeeInviteUrl = false;
   try {
     const urlParams = new URLSearchParams(window.location.search);
     const urlRole = urlParams.get('role');
@@ -2341,6 +2346,7 @@ async function loadState() {
     const urlAuth = urlParams.get('auth');
 
     if (urlRole === 'employee' || (urlEmail && urlAuth === 'login')) {
+      isEmployeeInviteUrl = true;
       window._incomingInviteEmail = urlEmail ? decodeURIComponent(urlEmail).trim() : '';
       window._incomingRole = 'employee';
       window._authFormMode = 'login';
@@ -2348,6 +2354,9 @@ async function loadState() {
       // Always reset active session so the staff member can authenticate cleanly
       STATE.isAuthenticated = false;
       STATE.currentUser = null;
+      STATE.activePanel = 'employee';
+      STATE.view = 'emp_workspace';
+      if (window.AccountiX_API) AccountiX_API.setToken('');
     }
   } catch (e) {
     console.warn('URL params parse note:', e);
@@ -2450,8 +2459,8 @@ async function loadState() {
     document.documentElement.setAttribute('data-theme', STATE.settings.theme);
   }
 
-  // Check Supabase Auth session & PostgreSQL data
-  if (isSupabaseConnected()) {
+  // Check Supabase Auth session & PostgreSQL data ONLY if NOT employee invite link
+  if (!isEmployeeInviteUrl && isSupabaseConnected()) {
     try {
       const { data: { user }, error: uErr } = await _supabaseClient.auth.getUser();
       if (user && !uErr) {
@@ -2464,7 +2473,7 @@ async function loadState() {
           role: isSuperAdminEmail ? 'admin' : ((user.user_metadata && user.user_metadata.role) || 'manager'),
           isSuperAdmin: isSuperAdminEmail,
           avatar: (user.user_metadata && user.user_metadata.avatar_url) || (isSuperAdminEmail ? '👑' : '🏢'),
-          companyName: STATE.settings ? STATE.settings.agencyName : 'AccountiX Media HQ'
+          companyName: STATE.settings ? STATE.settings.agencyName : 'Metrovise Media HQ'
         };
         STATE.isAuthenticated = true;
         if (isSuperAdminEmail) {
@@ -2478,14 +2487,20 @@ async function loadState() {
     }
   }
 
-  // Attempt backend JWT session & workspace hydration as secondary fallback
-  try {
-    const me = await AccountiX_API.fetchMe();
-    if (me && me.user) {
-      console.log('✓ JWT Session Authenticated:', me.user.name);
-    }
-    await AccountiX_API.fetchLogs();
-  } catch(e) {}
+  // Attempt backend JWT session & workspace hydration as secondary fallback ONLY if NOT employee invite link
+  if (!isEmployeeInviteUrl) {
+    try {
+      const me = await AccountiX_API.fetchMe();
+      if (me && me.user) {
+        console.log('✓ JWT Session Authenticated:', me.user.name);
+      }
+      await AccountiX_API.fetchLogs();
+    } catch(e) {}
+  } else {
+    // If opening employee invite link, ensure clean gateway login state
+    STATE.isAuthenticated = false;
+    STATE.currentUser = null;
+  }
 
   hideSessionLoading();
   render();
