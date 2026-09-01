@@ -42,15 +42,15 @@ Metrovise is built with a complete modern fullstack architecture:
 # 1. Install dependencies
 npm install
 
-# 2. Start the Backend Server (runs on http://localhost:5000)
+# 2. Start the Backend Server (runs on http://localhost:3000)
 npm start
 
 # Or with live auto-reload:
 npm run dev
 ```
 
-- **Frontend URL**: `http://localhost:5000`
-- **Backend API Health Check**: `http://localhost:5000/api/health`
+- **Frontend URL**: `http://localhost:3000`
+- **Backend API Health Check**: `http://localhost:3000/api/health`
 - **REST Endpoints**:
   - `POST /api/auth/login` (Email + Password authentication)
   - `POST /api/auth/register` (2-Time Password verification)
