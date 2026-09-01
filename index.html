@@ -1376,9 +1376,9 @@ const DEMO_PROFILES = [
 /* ================= STATE STORE ================= */
 const STORAGE_KEY = 'metrovise_os_data_v1';
 let STATE = {
-  isAuthenticated: true,
+  isAuthenticated: false,
   activePanel: 'manager',
-  currentUser: { ...DEMO_PROFILES[0], plan: 'Enterprise Suite' },
+  currentUser: null,
   companies: [
     { id: 'comp_1', name: 'Metrovise Media HQ', plan: '1 Year Plan', status: 'Active', ownerEmail: 'jeet@metrovise.com', createdAt: '2026-01-15', usersCount: 8, mrr: 999 },
     { id: 'comp_2', name: 'UrbanFit Digital Agency', plan: '6 Months Plan', status: 'Active', ownerEmail: 'dr.nikhil@urbanfit.io', createdAt: '2026-02-01', usersCount: 5, mrr: 589 },
@@ -2327,11 +2327,22 @@ async function loadState() {
         }
       } catch(e) {}
     }
-    if (!raw) {
-      raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('accountix_os_data_v1');
-    }
     if (raw) {
-      Object.assign(STATE, JSON.parse(raw));
+      const parsed = JSON.parse(raw);
+      if (parsed) {
+        Object.assign(STATE, parsed);
+        // RBAC Integrity: Ensure only jeetrakholiya@gmail.com / jeetrakholiya02@gmail.com has admin panel access
+        if (STATE.currentUser && STATE.currentUser.email) {
+          const cleanEm = String(STATE.currentUser.email).toLowerCase().trim();
+          const isSuperAdminEmail = cleanEm === 'jeetrakholiya02@gmail.com' || cleanEm === 'jeetrakholiya@gmail.com';
+          if (!isSuperAdminEmail) {
+            STATE.currentUser.isSuperAdmin = false;
+            if (STATE.currentUser.role === 'admin') STATE.currentUser.role = 'manager';
+            if (STATE.activePanel === 'admin') STATE.activePanel = STATE.currentUser.role || 'manager';
+            if (STATE.view === 'admin_overview') STATE.view = 'dashboard';
+          }
+        }
+      }
     }
   } catch (e) {
     console.warn('Load state notice:', e);
@@ -3058,7 +3069,8 @@ function switchAdminPanel(panel) {
     toast('⚠️ Access Restricted: Staff accounts have access to Employee Workspace only.');
     return;
   }
-  const isSuperAdmin = user.role === 'admin' && (user.isSuperAdmin === true || (user.email && (user.email === 'admin@metrovise.com' || user.email === 'jeetrakholiya02@gmail.com')));
+  const userEmail = (user.email || '').toLowerCase().trim();
+  const isSuperAdmin = (user.role === 'admin' || user.isSuperAdmin === true) && (userEmail === 'jeetrakholiya@gmail.com' || userEmail === 'jeetrakholiya02@gmail.com' || userEmail === 'admin@metrovise.com');
   if (!isSuperAdmin) return;
   STATE.activePanel = panel;
   if (panel === 'admin') {
@@ -3086,7 +3098,8 @@ function getNavItems() {
     ];
   }
 
-  const isSuperAdmin = user.role === 'admin' && (user.isSuperAdmin === true || (user.email && (user.email === 'admin@metrovise.com' || user.email === 'jeetrakholiya02@gmail.com')));
+  const userEmail = (user.email || '').toLowerCase().trim();
+  const isSuperAdmin = (user.role === 'admin' || user.isSuperAdmin === true) && (userEmail === 'jeetrakholiya@gmail.com' || userEmail === 'jeetrakholiya02@gmail.com' || userEmail === 'admin@metrovise.com');
   const currentPanel = isSuperAdmin ? (STATE.activePanel || 'admin') : (user.role || 'manager');
 
   if (currentPanel === 'admin') {
@@ -3602,6 +3615,11 @@ function renderLandingGateway() {
             </div>
 
             <div class="field" style="margin-bottom:14px;">
+              <label style="color:#f2e9e4; font-size:12px; font-weight:600;">Agency / Business Name *</label>
+              <input type="text" id="gateway_reg_agency_name" placeholder="e.g. Velocity Media Agency" value="" style="background:#1d1d2f; border:1px solid #4a4e69; color:#f2e9e4; border-radius:8px; padding:11px 12px; width:100%; box-sizing:border-box;" required />
+            </div>
+
+            <div class="field" style="margin-bottom:14px;">
               <label style="color:#f2e9e4; font-size:12px; font-weight:600;">Account Role / Type *</label>
               <select id="gateway_reg_role" style="background:#1d1d2f; border:1px solid #4a4e69; color:#f2e9e4; border-radius:8px; padding:11px 12px; width:100%; box-sizing:border-box; font-size:13px; font-weight:600;">
                 <option value="manager">🏢 Agency Director / Owner (Full Business OS)</option>
@@ -3657,6 +3675,7 @@ async function submitGatewayAuthForm() {
   const email = (document.getElementById('gateway_email') ? document.getElementById('gateway_email').value : '').trim();
   const pass = (document.getElementById('gateway_password') ? document.getElementById('gateway_password').value : '').trim();
   const name = isReg ? (document.getElementById('gateway_reg_name') ? document.getElementById('gateway_reg_name').value.trim() : '') : '';
+  const agencyName = isReg ? (document.getElementById('gateway_reg_agency_name') ? document.getElementById('gateway_reg_agency_name').value.trim() : '') : '';
   const chosenRole = isReg ? ((document.getElementById('gateway_reg_role') ? document.getElementById('gateway_reg_role').value : 'manager') || 'manager') : 'manager';
 
   const errBox = document.getElementById('gateway_auth_error_box');
@@ -3681,7 +3700,7 @@ async function submitGatewayAuthForm() {
   if (isReg) {
     // === REGISTRATION FLOW ===
     const newCompId = `comp_${Date.now()}`;
-    const compName = chosenRole === 'admin' ? 'AccountiX Platform HQ' : `${name}'s Agency`;
+    const compName = agencyName || (chosenRole === 'admin' ? 'Metrovise Platform HQ' : `${name}'s Agency`);
 
     // 1. Try Supabase Auth SignUp if connected
     if (isSupabaseConnected()) {
@@ -3690,7 +3709,7 @@ async function submitGatewayAuthForm() {
           email: cleanEmail,
           password: pass,
           options: {
-            data: { name: name || cleanEmail.split('@')[0], role: chosenRole }
+            data: { name: name || cleanEmail.split('@')[0], role: chosenRole, companyName: compName }
           }
         });
         if (sbData && sbData.user) {
@@ -3698,7 +3717,8 @@ async function submitGatewayAuthForm() {
             id: sbData.user.id,
             email: sbData.user.email,
             name: (sbData.user.user_metadata && sbData.user.user_metadata.name) || name,
-            role: (sbData.user.user_metadata && sbData.user.user_metadata.role) || chosenRole
+            role: (sbData.user.user_metadata && sbData.user.user_metadata.role) || chosenRole,
+            companyName: compName
           };
         }
       } catch (sbEx) {
@@ -3712,6 +3732,7 @@ async function submitGatewayAuthForm() {
         const regRes = await window.AccountiX_API.register(name, cleanEmail, pass, pass, chosenRole);
         if (regRes && regRes.success && regRes.user) {
           user = regRes.user;
+          user.companyName = compName;
         }
       } catch (e) {
         console.warn('API register error:', e);
@@ -3738,8 +3759,21 @@ async function submitGatewayAuthForm() {
     } else {
       user.password = pass;
       user.companyId = user.companyId || newCompId;
-      user.companyName = user.companyName || compName;
+      user.companyName = compName;
       user.status = 'Active';
+    }
+
+    // Update Agency Settings in STATE
+    if (chosenRole === 'manager') {
+      STATE.settings = {
+        agencyName: compName,
+        profession: 'general',
+        tagline: 'Agency Business OS & Financial Engine',
+        phone: '',
+        email: cleanEmail,
+        currencySymbol: '₹',
+        theme: 'light'
+      };
     }
 
     // Ensure user is stored in STATE.allUsers
@@ -3756,7 +3790,7 @@ async function submitGatewayAuthForm() {
     if (demoIdx >= 0) DEMO_PROFILES[demoIdx] = { ...DEMO_PROFILES[demoIdx], ...user, password: pass };
     else DEMO_PROFILES.push(user);
 
-    // Ensure company exists
+    // Ensure company exists in STATE.companies
     if (!STATE.companies) STATE.companies = [];
     if (!STATE.companies.find(c => c.id === user.companyId || (c.ownerEmail && c.ownerEmail.toLowerCase() === cleanEmail))) {
       STATE.companies.push({
@@ -3916,15 +3950,15 @@ async function submitGatewayAuthForm() {
     user.isSuperAdmin = false;
     STATE.activePanel = 'employee';
     STATE.view = 'emp_workspace';
-  } else if (isSuperAdminEmail && user.role === 'admin') {
+  } else if (isSuperAdminEmail) {
     user.role = 'admin';
     user.isSuperAdmin = true;
     STATE.activePanel = 'admin';
     STATE.view = 'admin_overview';
   } else {
-    user.role = user.role || 'manager';
+    user.role = 'manager';
     user.isSuperAdmin = false;
-    STATE.activePanel = user.role;
+    STATE.activePanel = 'manager';
     STATE.view = 'dashboard';
   }
 

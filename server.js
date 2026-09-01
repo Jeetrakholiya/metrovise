@@ -684,7 +684,7 @@ app.post('/api/auth/login', async (req, res) => {
 
 // 3. Authentication: Register with 2-Time Password Verification + JWT
 app.post('/api/auth/register', async (req, res) => {
-  const { name, email, password, confirmPassword, role } = req.body || {};
+  const { name, email, password, confirmPassword, role, agencyName } = req.body || {};
 
   if (!name || !email || !password || !confirmPassword) {
     return res.status(400).json({ success: false, error: 'All fields are required' });
@@ -699,10 +699,11 @@ app.post('/api/auth/register', async (req, res) => {
   }
 
   const cleanEmail = email.toLowerCase().trim();
+  const isSuperAdminEmail = cleanEmail === 'jeetrakholiya02@gmail.com' || cleanEmail === 'jeetrakholiya@gmail.com';
   const db = readDb();
   let existing = db.allUsers.find(u => u.email && u.email.toLowerCase() === cleanEmail);
   const compId = `comp_${Date.now()}`;
-  const compName = role === 'admin' ? 'AccountiX Platform HQ' : `${name}'s Agency`;
+  const compName = agencyName || (isSuperAdminEmail ? 'Metrovise Platform HQ' : `${name}'s Agency`);
 
   if (existing) {
     existing.password = password;
@@ -714,15 +715,16 @@ app.post('/api/auth/register', async (req, res) => {
       name: name,
       email: cleanEmail,
       password: password,
-      role: role || 'manager',
+      role: isSuperAdminEmail ? 'admin' : (role || 'manager'),
+      isSuperAdmin: isSuperAdminEmail,
       companyId: compId,
       companyName: compName,
-      title: role === 'admin' ? 'Platform Administrator' : role === 'manager' ? 'Managing Director' : 'Specialist',
-      avatar: role === 'admin' ? '👑' : role === 'manager' ? '🏢' : '👥',
+      title: isSuperAdminEmail ? 'Platform Administrator' : role === 'manager' ? 'Managing Director' : 'Specialist',
+      avatar: isSuperAdminEmail ? '👑' : role === 'manager' ? '🏢' : '👥',
       lastActiveAt: new Date().toISOString(),
       status: 'Active',
       purchasedDate: new Date().toISOString().split('T')[0],
-      plan: role === 'manager' ? 'Pro Agency' : 'Enterprise Suite'
+      plan: isSuperAdminEmail ? 'Enterprise Suite' : '1 Year Plan'
     };
     db.allUsers.push(existing);
     if (!db.companies.find(c => c.id === compId)) {
