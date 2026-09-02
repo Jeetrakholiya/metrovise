@@ -6,7 +6,7 @@
 <meta name="description" content="Metrovise — Executive Agency Operating System & Financial ERP">
 <meta name="theme-color" content="#f2e9e4">
 <title>Metrovise — Executive Agency Operating System & Financial ERP</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none'%3E%3Crect width='100' height='100' rx='22' fill='%231d1d2f'/%3E%3Crect x='1' y='1' width='98' height='98' rx='21' stroke='%23c9ada7' stroke-width='2' stroke-opacity='0.4'/%3E%3Cpath d='M22 26C22 23.8 23.8 22 26 22H32.5C34.7 22 36.5 23.8 36.5 26V74C36.5 76.2 34.7 78 32.5 78H26C23.8 78 22 76.2 22 74Z' fill='%23c9ada7'/%3E%3Cpath d='M63.5 26C63.5 23.8 65.3 22 67.5 22H74C76.2 22 78 23.8 78 26V74C78 76.2 76.2 78 74 78H67.5C65.3 78 63.5 76.2 63.5 74Z' fill='%239a8c98'/%3E%3Cpath d='M32 23L50 49L68 23H58.5L50 35.5L41.5 23Z' fill='%23f2e9e4'/%3E%3Cpath d='M32.5 45L50 78L67.5 45H58.5L50 61L41.5 45Z' fill='%23f2e9e4'/%3E%3Cpath d='M50 42L55 49L50 56L45 49Z' fill='%23ffffff'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none'%3E%3Crect width='100' height='100' rx='22' fill='%23181826'/%3E%3Crect x='1' y='1' width='98' height='98' rx='21' stroke='%23c9ada7' stroke-width='2' stroke-opacity='0.25'/%3E%3Cpath d='M26 73V28L50 53L74 28V73' stroke='%23f2e9e4' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
@@ -1413,59 +1413,49 @@ let STATE = {
   _adminTab: 'overview', _empTab: 'workspace', _empContentTab: 'all'
 };
 
-/* ================= 💎 SLEEK PROFESSIONAL METROVISE MV MONOGRAM LOGO ENGINE ================= */
+/* ================= 💎 MODERN MINIMALIST METROVISE 'M' LOGO ENGINE ================= */
 function renderMetroviseLogoSvg(size = 38, variant = 'brand') {
   const uid = Math.random().toString(36).substr(2, 4);
-  const gId = `mv_g_${variant}_${uid}`;
+  const gId = `mv_stroke_${variant}_${uid}`;
   const gBg = `mv_bg_${variant}_${uid}`;
 
-  let c1 = '#f5ede8', c2 = '#c9ada7', c3 = '#9a8c98';
-  let border = 'rgba(201, 173, 167, 0.28)';
+  let c1 = '#ffffff', c2 = '#f2e9e4', c3 = '#c9ada7';
+  let badgeBorder = 'rgba(201, 173, 167, 0.25)';
+  let bgTop = '#1e1e2f', bgBottom = '#13131f';
 
   if (variant === 'admin') {
-    c1 = '#faf5ff', c2 = '#c084fc', c3 = '#9333ea';
-    border = 'rgba(192, 132, 252, 0.35)';
+    c1 = '#ffffff'; c2 = '#f5d0fe'; c3 = '#c084fc';
+    badgeBorder = 'rgba(192, 132, 252, 0.35)';
+    bgTop = '#241b38'; bgBottom = '#130d22';
   } else if (variant === 'employee') {
-    c1 = '#ecfdf5', c2 = '#34d399', c3 = '#059669';
-    border = 'rgba(52, 211, 153, 0.35)';
+    c1 = '#ffffff'; c2 = '#a7f3d0'; c3 = '#34d399';
+    badgeBorder = 'rgba(52, 211, 153, 0.35)';
+    bgTop = '#132822'; bgBottom = '#0c1a16';
   }
 
   return `
     <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="border-radius:22%; flex-shrink:0; vertical-align:middle; display:inline-block;">
       <defs>
-        <!-- Background Sheen -->
+        <!-- Refined Matte Background -->
         <linearGradient id="${gBg}" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#242436"/>
-          <stop offset="100%" stop-color="#141420"/>
+          <stop offset="0%" stop-color="${bgTop}"/>
+          <stop offset="100%" stop-color="${bgBottom}"/>
         </linearGradient>
 
-        <!-- Primary Monogram Gradient -->
+        <!-- High-Contrast Clean Stroke Gradient -->
         <linearGradient id="${gId}" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stop-color="${c1}"/>
-          <stop offset="45%" stop-color="${c2}"/>
+          <stop offset="60%" stop-color="${c2}"/>
           <stop offset="100%" stop-color="${c3}"/>
         </linearGradient>
       </defs>
 
-      <!-- Base Plaque -->
+      <!-- Sleek Plaque Base -->
       <rect width="100" height="100" rx="22" fill="url(#${gBg})"/>
-      <rect x="0.75" y="0.75" width="98.5" height="98.5" rx="21.25" stroke="${border}" stroke-width="1.5"/>
+      <rect x="0.75" y="0.75" width="98.5" height="98.5" rx="21.25" stroke="${badgeBorder}" stroke-width="1.5"/>
 
-      <!-- Clean Architectural MV Monogram -->
-      <!-- Left Outer Stem of M -->
-      <path d="M 22 25 C 22 23.9 22.9 23 24 23 H 30 C 31.1 23 32 23.9 32 25 V 75 C 32 76.1 31.1 77 30 77 H 24 C 22.9 77 22 76.1 22 75 Z" fill="url(#${gId})"/>
-
-      <!-- Right Outer Stem of M -->
-      <path d="M 68 25 C 68 23.9 68.9 23 70 23 H 76 C 77.1 23 78 23.9 78 25 V 75 C 78 76.1 77.1 77 76 77 H 70 C 68.9 77 68 76.1 68 75 Z" fill="url(#${gId})"/>
-
-      <!-- Intersecting M Inner Chevron -->
-      <path d="M 31 23 L 50 49 L 69 23 H 60 L 50 36.5 L 40 23 Z" fill="url(#${gId})" opacity="0.95"/>
-
-      <!-- Core Interlocking 'V' Monogram Chevron -->
-      <path d="M 32 44 L 50 77 L 68 44 H 59 L 50 61 L 41 44 Z" fill="#ffffff" opacity="0.95"/>
-
-      <!-- Central Vision Diamond Accent -->
-      <path d="M 50 41 L 54.5 47 L 50 53 L 45.5 47 Z" fill="${c1}"/>
+      <!-- Instantly Recognizable Geometric 'M' (with Central 'V' Apex) -->
+      <path d="M 26 73 V 28 L 50 53 L 74 28 V 73" stroke="url(#${gId})" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   `;
 }
