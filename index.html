@@ -1837,6 +1837,8 @@ async function syncFromSupabase() {
     _isSyncingCloud = false;
   }
 }
+window.syncFromSupabase = syncFromSupabase;
+window.pullFromSupabase = syncFromSupabase;
 
 async function pushToSupabaseBulk() {
   if (!_supabaseClient) initSupabaseClient();
@@ -2128,7 +2130,8 @@ var Metrovise_API = {
           serviceCatalog: state.serviceCatalog || [],
           settings: state.settings || {},
           companies: state.companies || [],
-          allUsers: state.allUsers || []
+          allUsers: state.allUsers || [],
+          isProductionClean: !!state.isProductionClean
         })
       });
     } catch (e) {
@@ -2270,19 +2273,19 @@ var Metrovise_API = {
   },
   applyWorkspaceData(ws) {
     if (!ws) return;
-    if (ws.clients && ws.clients.length) STATE.clients = ws.clients;
-    else if (!STATE.clients || !STATE.clients.length) seedData();
-    if (ws.packages && ws.packages.length) STATE.packages = ws.packages;
-    if (ws.payments && ws.payments.length) STATE.payments = ws.payments;
-    if (ws.expenses && ws.expenses.length) STATE.expenses = ws.expenses;
-    if (ws.staff && ws.staff.length) STATE.staff = ws.staff;
-    if (ws.attendance) STATE.attendance = ws.attendance;
-    if (ws.salaryPayments) STATE.salaryPayments = ws.salaryPayments;
-    if (ws.tasks) STATE.tasks = ws.tasks;
-    if (ws.contentItems) STATE.contentItems = ws.contentItems;
-    if (ws.leads) STATE.leads = ws.leads;
-    if (ws.serviceCatalog && ws.serviceCatalog.length) STATE.serviceCatalog = ws.serviceCatalog;
+    if (Array.isArray(ws.clients)) STATE.clients = ws.clients;
+    if (Array.isArray(ws.packages)) STATE.packages = ws.packages;
+    if (Array.isArray(ws.payments)) STATE.payments = ws.payments;
+    if (Array.isArray(ws.expenses)) STATE.expenses = ws.expenses;
+    if (Array.isArray(ws.staff)) STATE.staff = ws.staff;
+    if (Array.isArray(ws.attendance)) STATE.attendance = ws.attendance;
+    if (Array.isArray(ws.salaryPayments)) STATE.salaryPayments = ws.salaryPayments;
+    if (Array.isArray(ws.tasks)) STATE.tasks = ws.tasks;
+    if (Array.isArray(ws.contentItems)) STATE.contentItems = ws.contentItems;
+    if (Array.isArray(ws.leads)) STATE.leads = ws.leads;
+    if (Array.isArray(ws.serviceCatalog) && ws.serviceCatalog.length) STATE.serviceCatalog = ws.serviceCatalog;
     if (ws.settings && Object.keys(ws.settings).length) STATE.settings = { ...STATE.settings, ...ws.settings };
+    if (ws.isProductionClean) STATE.isProductionClean = true;
     saveLocalState();
   }
 };
@@ -2317,6 +2320,7 @@ function saveState() {
 }
 
 async function loadState() {
+  let userEmail = '';
   try {
     let raw = null;
     const token = Metrovise_API.getToken() || (window.AccountiX_API && typeof window.AccountiX_API.getToken === 'function' ? window.AccountiX_API.getToken() : '');
@@ -2326,8 +2330,8 @@ async function loadState() {
         if (parts.length === 3) {
           const payload = JSON.parse(atob(parts[1]));
           if (payload && payload.email) {
-            const cleanEm = payload.email.toLowerCase().trim();
-            raw = localStorage.getItem('metrovise_state_' + cleanEm) || localStorage.getItem('accountix_state_' + cleanEm);
+            userEmail = payload.email.toLowerCase().trim();
+            raw = localStorage.getItem('metrovise_state_' + userEmail) || localStorage.getItem('accountix_state_' + userEmail);
           }
         }
       } catch(e) {}
@@ -2391,19 +2395,28 @@ async function loadState() {
     console.warn('Supabase config fetch note:', e);
   }
 
-  // 2. Fetch server database state for cross-device accounts
+  // 2. Load dedicated user workspace from Supabase Cloud / Backend Server
+  if (!userEmail && STATE.currentUser && STATE.currentUser.email) {
+    userEmail = STATE.currentUser.email.toLowerCase().trim();
+  }
+
+  if (userEmail) {
+    try {
+      const wsRes = await fetch(`/api/workspace?email=${encodeURIComponent(userEmail)}`, {
+        headers: Metrovise_API.getHeaders()
+      }).then(r => r.json()).catch(() => null);
+      if (wsRes && wsRes.success && wsRes.workspace) {
+        Metrovise_API.applyWorkspaceData(wsRes.workspace);
+      }
+    } catch (e) {
+      console.warn('Workspace cloud load notice:', e);
+    }
+  }
+
+  // 3. Fetch global server state for user accounts & companies
   try {
     const stateRes = await fetch('/api/state').then(r => r.json()).catch(() => null);
     if (stateRes) {
-      if (Array.isArray(stateRes.clients) && stateRes.clients.length && (!STATE.clients || !STATE.clients.length)) STATE.clients = stateRes.clients;
-      if (Array.isArray(stateRes.packages) && stateRes.packages.length && (!STATE.packages || !STATE.packages.length)) STATE.packages = stateRes.packages;
-      if (Array.isArray(stateRes.payments) && stateRes.payments.length && (!STATE.payments || !STATE.payments.length)) STATE.payments = stateRes.payments;
-      if (Array.isArray(stateRes.expenses) && stateRes.expenses.length && (!STATE.expenses || !STATE.expenses.length)) STATE.expenses = stateRes.expenses;
-      if (Array.isArray(stateRes.staff) && stateRes.staff.length && (!STATE.staff || !STATE.staff.length)) STATE.staff = stateRes.staff;
-      if (Array.isArray(stateRes.tasks) && stateRes.tasks.length && (!STATE.tasks || !STATE.tasks.length)) STATE.tasks = stateRes.tasks;
-      if (Array.isArray(stateRes.contentItems) && stateRes.contentItems.length && (!STATE.contentItems || !STATE.contentItems.length)) STATE.contentItems = stateRes.contentItems;
-      if (Array.isArray(stateRes.leads) && stateRes.leads.length && (!STATE.leads || !STATE.leads.length)) STATE.leads = stateRes.leads;
-
       if (Array.isArray(stateRes.allUsers) && stateRes.allUsers.length) {
         if (!STATE.allUsers) STATE.allUsers = [];
         stateRes.allUsers.forEach(bu => {
@@ -2425,16 +2438,16 @@ async function loadState() {
     console.warn('State sync note:', e);
   }
 
-  // 3. Cloud Sync: If Supabase PostgreSQL is connected, pull all records
+  // 4. Cloud Sync: If Supabase PostgreSQL is connected, pull entity records
   if (isSupabaseConnected()) {
     try {
-      await pullFromSupabase();
+      await syncFromSupabase();
     } catch (sbPullErr) {
       console.warn('Supabase cloud pull note:', sbPullErr);
     }
   }
 
-  // Ensure robust data structure and seed sample data if empty
+  // Ensure robust data structure
   if (!Array.isArray(STATE.clients)) STATE.clients = [];
   if (!Array.isArray(STATE.packages)) STATE.packages = [];
   if (!Array.isArray(STATE.payments)) STATE.payments = [];
@@ -2447,7 +2460,13 @@ async function loadState() {
   if (!Array.isArray(STATE.leads)) STATE.leads = [];
   if (!Array.isArray(STATE.userData)) STATE.userData = [];
 
-  if (!STATE.clients || !STATE.clients.length) {
+  // Check if workspace was explicitly cleared or set to clean production
+  const isCleanProd = STATE.isProductionClean || (userEmail && localStorage.getItem('metrovise_clean_' + userEmail) === 'true');
+  if (isCleanProd) {
+    STATE.isProductionClean = true;
+  } else if (!userEmail && !STATE.clients.length && !localStorage.getItem('metrovise_has_visited')) {
+    // Only guest demo visitor gets seed data on very first landing
+    localStorage.setItem('metrovise_has_visited', 'true');
     seedData();
   }
 
@@ -9593,6 +9612,7 @@ function attachSettings() {
 
   document.getElementById('launchCleanBtn').onclick = () => {
     if (confirm('Start Clean Production Database?\n\nThis will clear sample demo clients, leads, tasks, deliverables, and payments, while keeping your Agency Profile, Staff Roster, Rate Card, and Supabase connection intact.')) {
+      STATE.isProductionClean = true;
       STATE.clients = [];
       STATE.packages = [];
       STATE.payments = [];
@@ -9602,7 +9622,12 @@ function attachSettings() {
       STATE.tasks = [];
       STATE.contentItems = [];
       STATE.leads = [];
+      const userEmail = (STATE.currentUser && STATE.currentUser.email) ? STATE.currentUser.email.toLowerCase().trim() : '';
+      if (userEmail) localStorage.setItem('metrovise_clean_' + userEmail, 'true');
       saveState();
+      if (window.Metrovise_API && typeof window.Metrovise_API.syncWorkspace === 'function') {
+        window.Metrovise_API.syncWorkspace(STATE);
+      }
       toast('Production clean database ready for launch! 🚀');
       render();
     }

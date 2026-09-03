@@ -35,16 +35,19 @@ try {
 // Supabase client initialization & multi-device dynamic resolver
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 let supabase = null;
 
 function getActiveSupabaseClient() {
   if (supabase) return supabase;
   const db = readDb();
   const savedUrl = (db.supabaseConfig && db.supabaseConfig.url) || supabaseUrl;
-  const savedKey = (db.supabaseConfig && db.supabaseConfig.anonKey) || supabaseAnonKey;
+  const savedKey = (db.supabaseConfig && db.supabaseConfig.serviceRoleKey) || supabaseServiceRoleKey || (db.supabaseConfig && db.supabaseConfig.anonKey) || supabaseAnonKey;
   if (savedUrl && savedKey && savedUrl.startsWith('http')) {
     try {
-      supabase = createClient(savedUrl, savedKey);
+      supabase = createClient(savedUrl, savedKey, {
+        auth: { persistSession: false, autoRefreshToken: false }
+      });
       return supabase;
     } catch (err) {
       console.warn('⚠️ Supabase dynamic connection warning:', err.message);
@@ -53,10 +56,13 @@ function getActiveSupabaseClient() {
   return null;
 }
 
-if (supabaseUrl && supabaseAnonKey && supabaseUrl.startsWith('http')) {
+const activeInitKey = supabaseServiceRoleKey || supabaseAnonKey;
+if (supabaseUrl && activeInitKey && supabaseUrl.startsWith('http')) {
   try {
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
-    console.log('☁️ Supabase Cloud PostgreSQL client connected successfully!');
+    supabase = createClient(supabaseUrl, activeInitKey, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+    console.log(`☁️ Supabase Cloud PostgreSQL client connected successfully! (${supabaseServiceRoleKey ? 'Service Role Admin' : 'Anon Key'})`);
   } catch (err) {
     console.warn('⚠️ Supabase connection warning:', err.message);
   }
@@ -220,7 +226,7 @@ function getUserWorkspace(db, userOrKey) {
     return db.workspaces[compKey];
   }
   // 3. If user is the demo founder/seed profile, provide demo template workspace
-  if (emailKey && (emailKey === 'jeet@accountix.agency' || emailKey === 'admin@accountix.agency' || compKey === 'comp_1')) {
+  if (emailKey && (emailKey === 'admin@accountix.agency' || emailKey === 'admin@metrovise.com')) {
     if (db.workspaces['comp_1']) return db.workspaces['comp_1'];
     return {
       clients: db.clients || [],
@@ -235,13 +241,14 @@ function getUserWorkspace(db, userOrKey) {
       leads: db.leads || [],
       serviceCatalog: db.serviceCatalog || [],
       settings: db.settings || {
-        agencyName: 'AccountiX Business OS',
+        agencyName: 'Metrovise Agency OS',
         tagline: 'Multi-Profession Business OS & Financial Engine',
         phone: '+91 98765 43210',
-        email: emailKey || 'hello@accountix.agency',
+        email: emailKey || 'hello@metrovise.com',
         currencySymbol: '₹',
         theme: 'light'
-      }
+      },
+      isProductionClean: false
     };
   }
 
@@ -514,7 +521,10 @@ app.post('/api/auth/google', async (req, res) => {
     db.loginLogs.unshift(logEntry);
     if (db.loginLogs.length > 100) db.loginLogs = db.loginLogs.slice(0, 100);
 
-    const workspaceData = getUserWorkspace(db, user);
+    let workspaceData = await loadWorkspaceFromCloud(user.email, user.companyId);
+    if (!workspaceData) {
+      workspaceData = getUserWorkspace(db, user);
+    }
 
     writeDb(db);
 
@@ -666,9 +676,12 @@ app.post('/api/auth/login', async (req, res) => {
   db.loginLogs.unshift(logEntry);
   if (db.loginLogs.length > 100) db.loginLogs = db.loginLogs.slice(0, 100);
 
-  // Get user workspace
-  const workspaceKey = user.companyId || user.id || 'comp_1';
-  const workspaceData = getUserWorkspace(db, workspaceKey);
+  // Get user workspace (Cloud first, then local)
+  let workspaceData = await loadWorkspaceFromCloud(user.email, user.companyId);
+  if (!workspaceData) {
+    const workspaceKey = user.companyId || user.id || 'comp_1';
+    workspaceData = getUserWorkspace(db, workspaceKey);
+  }
 
   writeDb(db);
 
@@ -870,6 +883,111 @@ app.delete('/api/admin/logs', (req, res) => {
   res.json({ success: true, message: 'Login audit logs cleared' });
 });
 
+// 9. Cloud Persistence Helpers (Supabase PostgreSQL + Multi-Tenant Storage)
+async function saveWorkspaceToCloud(emailKey, companyKey, workspacePayload, allUsers = null, companies = null) {
+  const sb = getActiveSupabaseClient();
+  if (!sb) return false;
+
+  const key = emailKey ? `ws_${emailKey}` : `comp_${companyKey || 'comp_1'}`;
+  const now = new Date().toISOString();
+  let saved = false;
+
+  // 1. Primary: metrovise_workspaces table (native JSONB store)
+  try {
+    const { error: wsErr } = await sb.from('metrovise_workspaces').upsert({
+      workspace_key: key,
+      owner_email: emailKey || '',
+      company_id: companyKey || '',
+      data: workspacePayload,
+      updated_at: now
+    }, { onConflict: 'workspace_key' });
+
+    if (!wsErr) {
+      saved = true;
+      console.log(`✓ [Supabase Cloud] Workspace saved to metrovise_workspaces (${key})`);
+    } else {
+      console.warn(`[Supabase Cloud] metrovise_workspaces notice: ${wsErr.message}`);
+    }
+  } catch (err) {
+    console.warn('[Supabase Cloud] metrovise_workspaces error:', err.message);
+  }
+
+  // 2. Secondary: user_data table fallback
+  try {
+    const titleKey = `workspace_${emailKey || companyKey}`;
+    const { data: existing } = await sb.from('user_data').select('id').eq('title', titleKey).limit(1);
+    if (existing && existing.length > 0) {
+      const { error: updErr } = await sb.from('user_data').update({
+        content: JSON.stringify(workspacePayload),
+        updated_at: now
+      }).eq('id', existing[0].id);
+      if (!updErr) saved = true;
+    } else {
+      const { error: insErr } = await sb.from('user_data').insert({
+        title: titleKey,
+        content: JSON.stringify(workspacePayload),
+        updated_at: now
+      });
+      if (!insErr) saved = true;
+    }
+  } catch (err) {}
+
+  // 3. Save Users list
+  if (Array.isArray(allUsers) && allUsers.length > 0) {
+    try {
+      await sb.from('metrovise_workspaces').upsert({
+        workspace_key: 'global_all_users',
+        owner_email: 'system',
+        company_id: 'global',
+        data: allUsers,
+        updated_at: now
+      }, { onConflict: 'workspace_key' });
+    } catch (e) {}
+  }
+
+  return saved;
+}
+
+async function loadWorkspaceFromCloud(emailKey, companyKey) {
+  const sb = getActiveSupabaseClient();
+  if (!sb) return null;
+
+  const key = emailKey ? `ws_${emailKey}` : (companyKey ? `comp_${companyKey}` : '');
+  if (!key) return null;
+
+  // 1. Try metrovise_workspaces table
+  try {
+    const { data, error } = await sb.from('metrovise_workspaces').select('data').eq('workspace_key', key).limit(1);
+    if (!error && data && data.length > 0 && data[0].data) {
+      console.log(`✓ [Supabase Cloud] Workspace restored from metrovise_workspaces (${key})`);
+      return data[0].data;
+    }
+  } catch (e) {}
+
+  // 2. Try company key if email key didn't return
+  if (emailKey && companyKey && companyKey !== 'comp_1') {
+    try {
+      const { data, error } = await sb.from('metrovise_workspaces').select('data').eq('workspace_key', `comp_${companyKey}`).limit(1);
+      if (!error && data && data.length > 0 && data[0].data) {
+        return data[0].data;
+      }
+    } catch (e) {}
+  }
+
+  // 3. Fallback: Try user_data table
+  try {
+    const titleKey = `workspace_${emailKey || companyKey}`;
+    const { data, error } = await sb.from('user_data').select('content').eq('title', titleKey).limit(1);
+    if (!error && data && data.length > 0 && data[0].content) {
+      const parsed = typeof data[0].content === 'string' ? JSON.parse(data[0].content) : data[0].content;
+      console.log(`✓ [Supabase Cloud] Workspace restored from user_data (${titleKey})`);
+      return parsed;
+    }
+  } catch (e) {}
+
+  return null;
+}
+
 // 9. Multi-Tenant Workspace Sync Engine (Save per user/company across all devices)
 app.post('/api/workspace/sync', async (req, res) => {
   const incoming = req.body || {};
@@ -891,7 +1009,8 @@ app.post('/api/workspace/sync', async (req, res) => {
     contentItems: incoming.contentItems || [],
     leads: incoming.leads || [],
     serviceCatalog: incoming.serviceCatalog || [],
-    settings: incoming.settings || {}
+    settings: incoming.settings || {},
+    isProductionClean: !!incoming.isProductionClean
   };
 
   if (companyKey) db.workspaces[companyKey] = workspacePayload;
@@ -909,38 +1028,55 @@ app.post('/api/workspace/sync', async (req, res) => {
     db.allUsers = incoming.allUsers;
   }
 
-  // Multi-Device Cloud Sync to Supabase
+  writeDb(db);
+
+  // Asynchronously persist to Supabase Cloud
+  const cloudSaved = await saveWorkspaceToCloud(emailKey, companyKey, workspacePayload, incoming.allUsers, incoming.companies);
+
+  res.json({
+    success: true,
+    cloudSaved,
+    message: cloudSaved
+      ? 'Workspace data permanently synchronized to Supabase Cloud PostgreSQL!'
+      : 'Workspace saved to local cache (Supabase syncing in background).'
+  });
+});
+
+// 10. Load Specific User Workspace (Cloud First with Local Fallback)
+app.get('/api/workspace', async (req, res) => {
+  const emailKey = (req.query.email || (req.user ? req.user.email : '') || '').toLowerCase().trim();
+  const companyKey = req.query.companyId || (req.user ? req.user.companyId : null) || '';
+
+  // 1. Check Supabase Cloud first
+  const cloudWs = await loadWorkspaceFromCloud(emailKey, companyKey);
+  if (cloudWs) {
+    const db = readDb();
+    if (!db.workspaces) db.workspaces = {};
+    if (emailKey) db.workspaces[emailKey] = cloudWs;
+    if (companyKey) db.workspaces[companyKey] = cloudWs;
+    writeDb(db);
+    return res.json({ success: true, source: 'supabase_cloud', workspace: cloudWs });
+  }
+
+  // 2. Fallback to Local Persistent Cache
+  const db = readDb();
+  const localWs = getUserWorkspace(db, emailKey || companyKey);
+  return res.json({ success: true, source: 'local_cache', workspace: localWs });
+});
+
+// 11. Multi-Tenant Sync / Full State API (GET)
+app.get('/api/state', async (req, res) => {
+  const db = readDb();
+  // Attempt to hydrate global users if available in Supabase
   const sb = getActiveSupabaseClient();
   if (sb) {
     try {
-      if (emailKey) {
-        await sb.from('user_data').upsert({
-          id: `ws_${emailKey}`,
-          title: `workspace_${emailKey}`,
-          content: JSON.stringify(workspacePayload),
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'id' });
+      const { data: usersData } = await sb.from('metrovise_workspaces').select('data').eq('workspace_key', 'global_all_users').limit(1);
+      if (usersData && usersData.length > 0 && Array.isArray(usersData[0].data)) {
+        db.allUsers = usersData[0].data;
       }
-      if (incoming.allUsers && incoming.allUsers.length) {
-        await sb.from('user_data').upsert({
-          id: 'global_all_users',
-          title: 'global_all_users',
-          content: JSON.stringify(incoming.allUsers),
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'id' });
-      }
-    } catch (e) {
-      console.warn('Supabase workspace cloud sync note:', e.message);
-    }
+    } catch(e) {}
   }
-
-  writeDb(db);
-  res.json({ success: true, message: 'Workspace data synchronized across all devices!' });
-});
-
-// 10. Multi-Tenant Sync / Full State API (GET)
-app.get('/api/state', (req, res) => {
-  const db = readDb();
   res.json(db);
 });
 

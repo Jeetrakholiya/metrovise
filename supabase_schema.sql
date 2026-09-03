@@ -8,16 +8,46 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ==============================================================================
+-- 0. Metrovise Production Multi-Tenant Cloud Workspace & User Tables (Fast & Native JSONB)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS metrovise_workspaces (
+    workspace_key TEXT PRIMARY KEY,
+    owner_email TEXT,
+    company_id TEXT,
+    data JSONB NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS metrovise_users (
+    id TEXT PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    data JSONB NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Open access policies for service_role backend sync & authorized clients
+ALTER TABLE metrovise_workspaces ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "metrovise_workspaces_all" ON metrovise_workspaces;
+CREATE POLICY "metrovise_workspaces_all" ON metrovise_workspaces FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE metrovise_users ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "metrovise_users_all" ON metrovise_users;
+CREATE POLICY "metrovise_users_all" ON metrovise_users FOR ALL USING (true) WITH CHECK (true);
+
+-- ==============================================================================
 -- 1. Universal User Data Table (Persistent Storage with RLS)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS user_data (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    user_id TEXT,
     title TEXT,
     content TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+ALTER TABLE user_data ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "user_data_all" ON user_data;
+CREATE POLICY "user_data_all" ON user_data FOR ALL USING (true) WITH CHECK (true);
 
 -- ==============================================================================
 -- 2. AccountiX Core Application Tables (User-Owned & RLS Protected)
